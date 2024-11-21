@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { FilterOutlined, MoneyCollectOutlined } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
 import BalanceCard from "../BalanceCard/BalanceCard";
+import { NavLink } from "react-router-dom";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -10,10 +11,14 @@ const HeaderWrapper = styled.div`
   padding: 16px;
 `;
 
-const TitleWrapper = styled.div`
+const TitleWrapper = styled(NavLink)`
   display: flex;
   align-items: center;
   gap: 8px;
+
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
 `;
 
 const Logo = styled(MoneyCollectOutlined)`
@@ -30,6 +35,13 @@ const Title = styled.h1`
 const IconsWrapper = styled.div`
   display: flex;
   gap: 16px;
+  padding: 5px;
+
+  outline: none;
+
+  * {
+    outline: none;
+  }
 `;
 
 const MainWrapper = styled.div`
@@ -45,19 +57,22 @@ const MainWrapper = styled.div`
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
 `;
 
-const Header = () => {
+const Header = ({ setFilterModalOpen }) => {
   return (
     <MainWrapper>
       <HeaderWrapper>
         {/* Left Side: Dollar Icon with Title */}
-        <TitleWrapper>
+        <TitleWrapper to={"/"}>
           <Logo />
           <Title>SOQQA</Title>
         </TitleWrapper>
 
         {/* Right Side: Filter Icon */}
         <IconsWrapper>
-          <FilterOutlined style={{ fontSize: "20px", color: "#4caf50" }} />
+          <FilterOutlined
+            onClick={() => setFilterModalOpen(true)}
+            style={{ fontSize: "20px", color: "#4caf50", cursor: "pointer" }}
+          />
         </IconsWrapper>
       </HeaderWrapper>
 

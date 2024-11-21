@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Collapse } from "antd";
+import { Collapse, Empty } from "antd";
 import moment from "moment";
+import Loading from "../Loading/Loading";
+import { useTransactions } from "../../hook/useTransactions";
+import FilterModal from "../FilterModal/FilterModal"; // Modal komponentini import qilish
+import Header from "../Header/Header";
 
 const { Panel } = Collapse;
 
@@ -47,11 +51,6 @@ const TransactionDetails = styled.div`
     margin: 0;
     font-size: 14px;
   }
-
-  span {
-    color: #888;
-    font-size: 12px;
-  }
 `;
 
 const DateSummary = styled.div`
@@ -60,18 +59,43 @@ const DateSummary = styled.div`
   font-weight: bold;
 `;
 
-const TransactionsList = ({ transactions }) => {
-  const groupedTransactions = transactions.reduce((acc, transaction) => {
-    const date = transaction.date;
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(transaction);
-    return acc;
-  }, {});
+const NoDataWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 40px;
+  text-align: center;
+  background-color: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const NoDataText = styled.h3`
+  color: #8c8c8c;
+  font-weight: 500;
+`;
+
+const TransactionsList = () => {
+  const [filters, setFilters] = useState({}); // Filterlar holati
+  const [isModalOpen, setModalOpen] = useState(false); // Modalni boshqarish
+
+  const { data: transactions = [], isLoading } = useTransactions(filters);
+
+  const handleApplyFilters = (newFilters) => {
+    // Modal orqali kelgan filtrlash ma'lumotlarini o‘rnatish
+    setFilters({
+      ...filters,
+      type: newFilters.filterType,
+      payment: newFilters.paymentType,
+      startDate: newFilters.dateRange ? newFilters.dateRange[0] : null,
+      endDate: newFilters.dateRange ? newFilters.dateRange[1] : null,
+    });
+    setModalOpen(false);
+  };
 
   const formatDate = (date) =>
-    moment(date, "DD.MM.YYYY").format("DD-MMMM YYYY");
+    moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
 
   const renderTransactionItems = (items) =>
     items.map((item, index) => (
@@ -84,87 +108,66 @@ const TransactionsList = ({ transactions }) => {
       </TransactionItem>
     ));
 
+  // Tranzaktsiyalarni guruhlash
+  const groupedTransactions = transactions.reduce((acc, transaction) => {
+    const date = transaction.date;
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(transaction);
+    return acc;
+  }, {});
+
   return (
-    <ListWrapper>
-      <Collapse accordion>
-        {Object.keys(groupedTransactions).map((date) => {
-          const dayTransactions = groupedTransactions[date];
-          const total = dayTransactions.reduce((sum, item) => {
-            return item.type === "income"
-              ? sum + item.amount
-              : sum - item.amount;
-          }, 0);
+    <>
+      <Header setFilterModalOpen={setModalOpen} />
+      <FilterModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onApply={handleApplyFilters}
+      />
+      {isLoading ? (
+        <Loading />
+      ) : transactions.length === 0 ? ( // Agar tranzaktsiyalar bo‘sh bo‘lsa
+        <NoDataWrapper>
+          <Empty description={false} />
+          <NoDataText>Hozircha malumotlar mavjud emas</NoDataText>
+        </NoDataWrapper>
+      ) : (
+        <ListWrapper>
+          <Collapse accordion>
+            {Object.keys(groupedTransactions).map((date) => {
+              const dayTransactions = groupedTransactions[date];
+              const total = dayTransactions.reduce((sum, item) => {
+                return item.type === "income"
+                  ? sum + item.amount
+                  : sum - item.amount;
+              }, 0);
 
-          return (
-            <Panel
-              key={date}
-              header={
-                <DateSummary>
-                  <span>{formatDate(date)}</span>
-                  <span style={{ color: total >= 0 ? "#4caf50" : "#f44336" }}>
-                    UZS {total.toLocaleString()}
-                  </span>
-                </DateSummary>
-              }
-            >
-              {renderTransactionItems(dayTransactions)}
-            </Panel>
-          );
-        })}
-      </Collapse>
-      <Collapse accordion>
-        {Object.keys(groupedTransactions).map((date) => {
-          const dayTransactions = groupedTransactions[date];
-          const total = dayTransactions.reduce((sum, item) => {
-            return item.type === "income"
-              ? sum + item.amount
-              : sum - item.amount;
-          }, 0);
-
-          return (
-            <Panel
-              key={date}
-              header={
-                <DateSummary>
-                  <span>{formatDate(date)}</span>
-                  <span style={{ color: total >= 0 ? "#4caf50" : "#f44336" }}>
-                    UZS {total.toLocaleString()}
-                  </span>
-                </DateSummary>
-              }
-            >
-              {renderTransactionItems(dayTransactions)}
-            </Panel>
-          );
-        })}
-      </Collapse>
-      <Collapse accordion>
-        {Object.keys(groupedTransactions).map((date) => {
-          const dayTransactions = groupedTransactions[date];
-          const total = dayTransactions.reduce((sum, item) => {
-            return item.type === "income"
-              ? sum + item.amount
-              : sum - item.amount;
-          }, 0);
-
-          return (
-            <Panel
-              key={date}
-              header={
-                <DateSummary>
-                  <span>{formatDate(date)}</span>
-                  <span style={{ color: total >= 0 ? "#4caf50" : "#f44336" }}>
-                    UZS {total.toLocaleString()}
-                  </span>
-                </DateSummary>
-              }
-            >
-              {renderTransactionItems(dayTransactions)}
-            </Panel>
-          );
-        })}
-      </Collapse>
-    </ListWrapper>
+              return (
+                <Panel
+                  key={date}
+                  header={
+                    <DateSummary>
+                      <span>{formatDate(date)}</span>
+                      <span
+                        style={{
+                          color: total >= 0 ? "#4caf50" : "#f44336",
+                        }}
+                      >
+                        UZS {total.toLocaleString()}
+                      </span>
+                    </DateSummary>
+                  }
+                >
+                  {renderTransactionItems(dayTransactions)}
+                </Panel>
+              );
+            })}
+          </Collapse>
+        </ListWrapper>
+      )}
+    </>
   );
 };
 

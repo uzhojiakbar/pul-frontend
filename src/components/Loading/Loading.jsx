@@ -15,7 +15,9 @@ const LoaderWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.1);
+  z-index: 99999;
+
+  backdrop-filter: blur(2px);
 `;
 
 const Loader = styled.div`

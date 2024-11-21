@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "../../components/Header/Header";
-import BalanceCard from "../../components/BalanceCard/BalanceCard";
 import TransactionsList from "../../components/TransactionsList/TransacrionsList";
 import ActionButtons from "../../components/ActionButtons/ActionButtons";
+import FilterModal from "../../components/FilterModal/FilterModal";
 
 const HomeWrapper = styled.div`
   display: flex;
@@ -18,61 +18,31 @@ const ContentWrapper = styled.div`
   flex: 1;
   width: 100%;
   overflow-y: auto;
-  padding-bottom: 80px; /* ActionButtons balandligiga mos */
+  padding-bottom: 80px;
 `;
 
 const AppWrapper = styled.div`
   height: 100%;
   width: 100%;
-  min-width: 320px; /* Maksimal kenglik (mobil uchun) */
+  min-width: 320px;
   margin: 0 auto;
   position: relative;
   background-color: #f5f5f5;
 `;
 
 const Home = () => {
-  const transactions = [
-    {
-      date: "21.11.2024",
-      category: "Deposits",
-      amount: 60000000,
-      type: "income",
-    },
-    {
-      date: "21.11.2024",
-      category: "Deposits (Oylik)",
-      amount: 1000000,
-      type: "income",
-    },
-    { date: "21.11.2024", category: "Health", amount: 500000, type: "expense" },
-    {
-      date: "21.11.2024",
-      category: "Food (Cola)",
-      amount: 9000,
-      type: "expense",
-    },
-    {
-      date: "20.11.2024",
-      category: "Entertainment",
-      amount: 500000,
-      type: "expense",
-    },
-    {
-      date: "20.11.2024",
-      category: "Groceries",
-      amount: 200000,
-      type: "expense",
-    },
-    { date: "19.11.2024", category: "Salary", amount: 1500000, type: "income" },
-  ];
+  const [isFilterModalOpen, setFilterModalOpen] = useState(false);
+  const [filteredTransactions, setFilteredTransactions] = useState(null);
 
   return (
     <HomeWrapper>
       <AppWrapper>
-        <Header />
+        {/* Content */}
         <ContentWrapper>
-          <TransactionsList transactions={transactions} />
+          <TransactionsList />
         </ContentWrapper>
+
+        {/* Action Buttons */}
         <ActionButtons />
       </AppWrapper>
     </HomeWrapper>
