@@ -10,6 +10,9 @@ export const isTokenExpired = (token) => {
   try {
     const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000; // Millisekundni sekundga o‘tkazish
+
+    console.log("asd", (decoded.exp - currentTime) / 1000);
+    console.log(decoded.exp < currentTime);
     return decoded.exp < currentTime; // Amal qilish tugaganmi?
   } catch (error) {
     return true; // Xato bo‘lsa, token amal qilmagan

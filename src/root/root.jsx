@@ -3,17 +3,20 @@ import Router from "../router/router";
 import "./root.css";
 import { isTokenExpired, logoutUser } from "../utils/auth";
 import Cookies from "js-cookie";
+import GlobalStyle from "./style";
 
 const Root = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token && isTokenExpired(token)) {
-      logoutUser(); // Agar token muddati tugagan bo‘lsa, logout qilamiz
-      window.location.href = "/login"; // Login sahifasiga yo‘naltirish
+      logoutUser();
+      window.location.href = "/login";
     }
   }, []);
+
   return (
     <div>
+      <GlobalStyle />
       <Router />
     </div>
   );
