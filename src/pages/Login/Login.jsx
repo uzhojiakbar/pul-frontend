@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Form, Input, Button, message } from "antd";
-import { loginUser } from "../../utils/auth";
+import { isTokenExpired, loginUser } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import Cookies from "js-cookie";
+
 import Loading from "../../components/Loading/Loading";
 
 const LoginWrapper = styled.div`
@@ -24,6 +26,13 @@ const LoginCard = styled.div`
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token && isTokenExpired(token)) {
+      message.warning("Session expired, please login again!");
+    }
+  }, []);
 
   const onFinish = async (values) => {
     setLoading(true);
