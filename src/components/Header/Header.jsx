@@ -1,12 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  FilterOutlined,
-  DollarCircleOutlined,
-  MoneyCollectFilled,
-  MoneyCollectTwoTone,
-  MoneyCollectOutlined,
-} from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
+import { FilterOutlined, MoneyCollectOutlined } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
 import BalanceCard from "../BalanceCard/BalanceCard";
 
 const HeaderWrapper = styled.div`
