@@ -42,7 +42,6 @@ const MainWrapper = styled.div`
   width: 100%;
   height: fit-content;
   padding: 5px 0;
-  background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
 `;
 
