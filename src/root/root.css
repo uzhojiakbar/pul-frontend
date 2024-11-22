@@ -3,3 +3,18 @@
   margin: 0;
   box-sizing: border-box;
 }
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.486);
+  border-radius: 25px;
+}
+
+*::selection {
+  background-color: #4400fd;
+  color: white;
+}

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import AddTransactionModal from "../AddTransactionModal/AddTransactionModal"; // Yangi Modal komponentini import qilish
+import { NavLink } from "react-router-dom";
 
 const ButtonsWrapper = styled.div`
   display: flex;
@@ -39,11 +41,20 @@ const Button = styled.button`
 `;
 
 const ActionButtons = () => {
+  const [isIncomeModalOpen, setIncomeModalOpen] = useState(false); // Kirim modal holati
+  const [isExpenseModalOpen, setExpenseModalOpen] = useState(false); // Chiqim modal holati
+
   return (
-    <ButtonsWrapper>
-      <Button color="#f44336">-</Button>
-      <Button color="#4caf50">+</Button>
-    </ButtonsWrapper>
+    <>
+      <ButtonsWrapper>
+        <NavLink to={"/new-income"}>
+          <Button color="#f44336">-</Button>
+        </NavLink>
+        <NavLink to={"/new-income"}>
+          <Button color="#4caf50">+</Button>
+        </NavLink>
+      </ButtonsWrapper>
+    </>
   );
 };
 

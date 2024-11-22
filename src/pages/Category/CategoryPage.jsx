@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, List, Input, Modal, message, Divider } from "antd";
+
 import {
   useCategories,
   useAddCategory,
   useDeleteCategory,
 } from "../../hook/useCategorires";
 import Loading from "../../components/Loading/Loading";
+import { PlusOutlined } from "@ant-design/icons";
 
 const PageWrapper = styled.div`
   padding: 16px;
@@ -15,6 +17,12 @@ const PageWrapper = styled.div`
 const Title = styled.h1`
   text-align: center;
   color: #4caf50;
+
+  /* font-size: 20px; */
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 const TitleWithBtn = styled.div`
@@ -40,6 +48,16 @@ const StyledButton = styled(Button)`
     background-color: #4caf50;
     color: black !important;
     border: none;
+  }
+
+  @media (max-width: 480px) {
+    .name {
+      display: none;
+    }
+
+    .icon {
+      font-size: 14px;
+    }
   }
 `;
 
@@ -112,7 +130,8 @@ const CategoryPage = () => {
       <TitleWithBtn>
         <Title>Kategoriyalar</Title>
         <StyledButton onClick={() => setIsModalOpen(true)}>
-          Kategoriya qo‘shish
+          <PlusOutlined className="icon" />
+          <span className="name">Kategoriya qo‘shish</span>
         </StyledButton>
       </TitleWithBtn>
 

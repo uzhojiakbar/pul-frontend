@@ -2,10 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Collapse, Empty } from "antd";
 import moment from "moment";
-import Loading from "../Loading/Loading";
-import { useTransactions } from "../../hook/useTransactions";
-import FilterModal from "../FilterModal/FilterModal"; // Modal komponentini import qilish
-import Header from "../Header/Header";
 
 const { Panel } = Collapse;
 
@@ -22,7 +18,7 @@ const TransactionItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 2px solid #c5c2c2;
 
   &:last-child {
     border-bottom: none;
@@ -35,17 +31,26 @@ const TransactionItem = styled.div`
 `;
 
 const Indicator = styled.div`
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background-color: ${({ type }) =>
     type === "expense" ? "#f44336" : "#4caf50"};
   border-radius: 50%;
+  box-shadow: 0 0 5px 2px
+    ${({ type }) => (type === "expense" ? "#f44336" : "#4caf50")};
   margin-right: 8px;
 `;
 
 const TransactionDetails = styled.div`
   display: flex;
   align-items: center;
+  gap: 20px;
+
+  .title {
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
 
   p {
     margin: 0;
@@ -85,7 +90,10 @@ const TransactionsList = ({ transactions }) => {
       <TransactionItem key={index} type={item.type}>
         <TransactionDetails>
           <Indicator type={item.type} />
-          <p>{item.category}</p>
+          <div className="2">
+            <p className="title">{item.category}</p>
+            <p>{item.description}</p>
+          </div>
         </TransactionDetails>
         <span>UZS {item.amount.toLocaleString()}</span>
       </TransactionItem>
