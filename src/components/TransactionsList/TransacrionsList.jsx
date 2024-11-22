@@ -76,24 +76,7 @@ const NoDataText = styled.h3`
   font-weight: 500;
 `;
 
-const TransactionsList = () => {
-  const [filters, setFilters] = useState({}); // Filterlar holati
-  const [isModalOpen, setModalOpen] = useState(false); // Modalni boshqarish
-
-  const { data: transactions = [], isLoading } = useTransactions(filters);
-
-  const handleApplyFilters = (newFilters) => {
-    // Modal orqali kelgan filtrlash ma'lumotlarini o‘rnatish
-    setFilters({
-      ...filters,
-      type: newFilters.filterType,
-      payment: newFilters.paymentType,
-      startDate: newFilters.dateRange ? newFilters.dateRange[0] : null,
-      endDate: newFilters.dateRange ? newFilters.dateRange[1] : null,
-    });
-    setModalOpen(false);
-  };
-
+const TransactionsList = ({ transactions }) => {
   const formatDate = (date) =>
     moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
 
@@ -120,15 +103,7 @@ const TransactionsList = () => {
 
   return (
     <>
-      <Header setFilterModalOpen={setModalOpen} />
-      <FilterModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onApply={handleApplyFilters}
-      />
-      {isLoading ? (
-        <Loading />
-      ) : transactions.length === 0 ? ( // Agar tranzaktsiyalar bo‘sh bo‘lsa
+      {transactions.length === 0 ? ( // Agar tranzaktsiyalar bo‘sh bo‘lsa
         <NoDataWrapper>
           <Empty description={false} />
           <NoDataText>Hozircha malumotlar mavjud emas</NoDataText>

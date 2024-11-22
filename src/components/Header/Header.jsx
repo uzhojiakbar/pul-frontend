@@ -1,6 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { FilterOutlined, MoneyCollectOutlined } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
+import {
+  FilterOutlined,
+  MenuFoldOutlined,
+  MoneyCollectOutlined,
+} from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
 import BalanceCard from "../BalanceCard/BalanceCard";
 import { NavLink } from "react-router-dom";
 
@@ -52,7 +56,6 @@ const MainWrapper = styled.div`
   z-index: 2;
 
   width: 100%;
-  height: fit-content;
   padding: 5px 0;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
 `;
@@ -73,6 +76,11 @@ const Header = ({ setFilterModalOpen }) => {
             onClick={() => setFilterModalOpen(true)}
             style={{ fontSize: "20px", color: "#4caf50", cursor: "pointer" }}
           />
+          <NavLink to="/categories">
+            <MenuFoldOutlined
+              style={{ fontSize: "20px", color: "#4caf50", cursor: "pointer" }}
+            />
+          </NavLink>
         </IconsWrapper>
       </HeaderWrapper>
 

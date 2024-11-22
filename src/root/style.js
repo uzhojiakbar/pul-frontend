@@ -7,7 +7,6 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Arial', sans-serif;
     background-color: #f5f5f5;
     min-width: 320px;
-    overflow: auto;
 
     position: relative;
   }

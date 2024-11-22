@@ -4,15 +4,17 @@ import Login from "../pages/Login/Login";
 import Home from "../pages/Home/Home";
 import PageController from "../components/PageController/PageController";
 import Auth from "../components/PageController/Auth";
+import CategoryPage from "../pages/Category/CategoryPage";
+// import Categories from "../pages/Categories/Categories"; // Categories sahifasi
 
-const Router = () => {
+const Router = ({ transactions }) => {
   return (
     <Routes>
       <Route
         path="/"
         element={
           <PageController>
-            <Home />
+            <Home transactions={transactions} />
           </PageController>
         }
       />
@@ -22,6 +24,14 @@ const Router = () => {
           <Auth>
             <Login />
           </Auth>
+        }
+      />
+      <Route
+        path="/categories"
+        element={
+          <PageController>
+            <CategoryPage />
+          </PageController>
         }
       />
       <Route path="/*" element={<h1>Not found</h1>} />

@@ -42,6 +42,7 @@ const Login = () => {
       loginUser(token, id, username);
       message.success("Login successful");
       navigate("/");
+      document.location.reload();
     } catch (error) {
       message.error(error.response?.data?.error || "Login failed");
     } finally {
