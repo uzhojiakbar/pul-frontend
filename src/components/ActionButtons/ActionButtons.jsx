@@ -15,6 +15,10 @@ const ButtonsWrapper = styled.div`
   height: 80px;
   backdrop-filter: blur(4px);
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
 `;
 
 const Button = styled.button`
@@ -47,7 +51,7 @@ const ActionButtons = () => {
   return (
     <>
       <ButtonsWrapper>
-        <NavLink to={"/new-income"}>
+        <NavLink to={"/new-expense"}>
           <Button color="#f44336">-</Button>
         </NavLink>
         <NavLink to={"/new-income"}>

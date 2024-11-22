@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {
   FilterOutlined,
   MenuFoldOutlined,
-  MoneyCollectOutlined,
+  DollarCircleOutlined,
 } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
 import BalanceCard from "../BalanceCard/BalanceCard";
 import { NavLink } from "react-router-dom";
@@ -25,7 +25,7 @@ const TitleWrapper = styled(NavLink)`
   text-decoration: none;
 `;
 
-const Logo = styled(MoneyCollectOutlined)`
+const Logo = styled(DollarCircleOutlined)`
   font-size: 24px;
   color: #4caf50; /* Yashil rang */
 `;
@@ -58,6 +58,22 @@ const MainWrapper = styled.div`
   width: 100%;
   padding: 5px 0;
   box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+
+  height: fit-content;
+  max-height: 10vh;
+
+  @media (max-width: 1024px) {
+    height: fit-content;
+    max-height: 26vh;
+  }
+`;
+
+const BalanceWrapper = styled.div`
+  margin-top: 10px;
+
+  @media (min-width: 1024px) {
+    display: none; /* Kompyuter versiyada yashirish */
+  }
 `;
 
 const Header = ({ setFilterModalOpen }) => {
@@ -85,7 +101,9 @@ const Header = ({ setFilterModalOpen }) => {
       </HeaderWrapper>
 
       {/* Balance Card */}
-      <BalanceCard balance="59,991,000.00" />
+      <BalanceWrapper>
+        <BalanceCard naqd={200000} karta={500000} dollar={1900000} />
+      </BalanceWrapper>
     </MainWrapper>
   );
 };

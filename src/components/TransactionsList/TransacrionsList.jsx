@@ -118,7 +118,7 @@ const TransactionsList = ({ transactions }) => {
         </NoDataWrapper>
       ) : (
         <ListWrapper>
-          <Collapse accordion>
+          <Collapse>
             {Object.keys(groupedTransactions).map((date) => {
               const dayTransactions = groupedTransactions[date];
               const total = dayTransactions.reduce((sum, item) => {

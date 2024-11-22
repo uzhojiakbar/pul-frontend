@@ -37,11 +37,11 @@ const OptionButton = styled.button`
   text-align: center;
 
   &:hover {
-    background-color: #e8f5e9; // Yashil ohang
+    background-color: #fce4ec; // Qizil ohang
   }
 
   &.active {
-    background-color: #4caf50;
+    background-color: #f44336;
     color: white;
     border: none;
   }
@@ -68,14 +68,14 @@ const CancelButton = styled(Button)`
 `;
 
 const ActionButton = styled(Button)`
-  background-color: #4caf50;
+  background-color: #f44336;
 
   &:hover {
-    background-color: #5bca5f !important;
+    background-color: #e57373 !important;
   }
 `;
 
-const NewIncome = ({ home = 0 }) => {
+const NewExpense = ({ home = 0 }) => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [paymentType, setPaymentType] = useState(""); // To'lov turi
@@ -112,7 +112,7 @@ const NewIncome = ({ home = 0 }) => {
         category: selectedCategory.name, // Nomi backendga yuboriladi
         amount: parseFloat(amount),
         description,
-        type: "income",
+        type: "expense",
         payment: paymentType.toLowerCase(), // To'lov turi kichik harf bilan yuboriladi
       },
       {
@@ -199,7 +199,7 @@ const NewIncome = ({ home = 0 }) => {
             type="primary"
             onClick={handleSubmit}
             disabled={loading} // Loading paytida tugma o'chiriladi
-            style={{ background: "#4caf50" }}
+            style={{ background: "#f44336" }}
           >
             Qo'shish
           </ActionButton>
@@ -217,4 +217,4 @@ const NewIncome = ({ home = 0 }) => {
   );
 };
 
-export default NewIncome;
+export default NewExpense;

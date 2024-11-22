@@ -8,6 +8,7 @@ import Header from "../components/Header/Header";
 import FilterModal from "../components/FilterModal/FilterModal";
 import { useTransactions } from "../hook/useTransactions";
 import Loading from "../components/Loading/Loading";
+import NewIncome from "../pages/NewIncome/NewIncome";
 
 const Root = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
