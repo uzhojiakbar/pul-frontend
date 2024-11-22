@@ -5,6 +5,7 @@ import {
   MenuFoldOutlined,
   DollarCircleOutlined,
 } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
+import { Dropdown, Menu } from "antd";
 import BalanceCard from "../BalanceCard/BalanceCard";
 import { NavLink } from "react-router-dom";
 
@@ -76,16 +77,65 @@ const BalanceWrapper = styled.div`
   }
 `;
 
+const BalanceDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4caf50;
+  cursor: pointer;
+
+  border: 1px solid #4caf50;
+  padding: 5px 10px;
+  border-radius: 5px;
+
+  transition: 0.3s;
+
+  &:hover {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  @media (max-width: 1024px) {
+    display: none; /* Kompyuter versiyada yashirish */
+  }
+`;
+const LeftWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
 const Header = ({ setFilterModalOpen }) => {
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        <span>Naqd:</span> <span style={{ float: "right" }}>UZS 1,200,000</span>
+      </Menu.Item>
+      <Menu.Item key="2">
+        <span>Karta:</span> <span style={{ float: "right" }}>UZS 800,000</span>
+      </Menu.Item>
+      <Menu.Item key="3">
+        <span>Dollar:</span> <span style={{ float: "right" }}>USD 600</span>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <MainWrapper>
       <HeaderWrapper>
         {/* Left Side: Dollar Icon with Title */}
-        <TitleWrapper to={"/"}>
-          <Logo />
-          <Title>SOQQA</Title>
-        </TitleWrapper>
+        <LeftWrapper>
+          <TitleWrapper to={"/"}>
+            <Logo />
+            <Title>SOQQA</Title>
+          </TitleWrapper>
 
+          <Dropdown overlay={menu} trigger={["hover"]}>
+            <BalanceDisplay>Umumiy: UZS 2,600,000</BalanceDisplay>
+          </Dropdown>
+        </LeftWrapper>
         {/* Right Side: Filter Icon */}
         <IconsWrapper>
           <FilterOutlined
