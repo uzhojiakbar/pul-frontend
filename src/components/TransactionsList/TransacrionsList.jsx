@@ -86,6 +86,7 @@ const BalanceCardWrapper = styled.div`
   display: block;
   position: sticky;
   backdrop-filter: blur(2px);
+  z-index: 1;
   top: 10vh;
   @media (max-width: 1024px) {
     display: none; /* Kompyuter versiyada yashirish */
