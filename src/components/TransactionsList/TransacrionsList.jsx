@@ -113,7 +113,7 @@ const BalanceCardWrapper = styled.div`
 `;
 
 const TransactionsList = ({ filters }) => {
-  const { data: transactions, isLoading } = useTransactions(filters);
+  const { data: transactions = [], isLoading } = useTransactions(filters);
 
   const formatDate = (date) =>
     moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
@@ -163,7 +163,7 @@ const TransactionsList = ({ filters }) => {
     });
 
   // Tranzaktsiyalarni guruhlash
-  const groupedTransactions = transactions.reduce((acc, transaction) => {
+  const groupedTransactions = transactions?.reduce((acc, transaction) => {
     const date = transaction.date;
     if (!acc[date]) {
       acc[date] = [];
