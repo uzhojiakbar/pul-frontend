@@ -6,6 +6,8 @@ import {
   DollarCircleOutlined,
 } from "@ant-design/icons";
 
+import { useBalance } from "../../hook/useBalance";
+
 const Card = styled.div`
   margin: 0 16px;
   padding: 10px;
@@ -58,29 +60,30 @@ const Amount = styled.span`
 `;
 
 const BalanceCard = ({ naqd, karta, dollar }) => {
+  const { data: balance, isLoading } = useBalance();
+  console.log(balance);
+
   const totalBalance = naqd + karta + dollar;
 
   return (
     <Card>
-      <TotalBalance>
-        Umumiy hisob: UZS {totalBalance.toLocaleString()}
-      </TotalBalance>
+      <TotalBalance>Umumiy hisob: UZS {balance?.all?.uzs}</TotalBalance>
       <SubBalances>
         <SubBalanceItem>
           <WalletOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
-          <Amount>{naqd.toLocaleString()} UZS </Amount>
+          <Amount>{balance?.uzs.toLocaleString()} UZS </Amount>
         </SubBalanceItem>
         <Divider />
         <SubBalanceItem>
           <CreditCardOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
-          <Amount>{karta.toLocaleString()} UZS </Amount>
+          <Amount>{balance?.card} UZS </Amount>
         </SubBalanceItem>
         <Divider />
         <SubBalanceItem>
           <DollarCircleOutlined
             style={{ fontSize: "16px", color: "#4caf50" }}
           />
-          <Amount> {dollar.toLocaleString()} USD</Amount>
+          <Amount> {balance?.usd.toLocaleString()} USD</Amount>
         </SubBalanceItem>
       </SubBalances>
     </Card>

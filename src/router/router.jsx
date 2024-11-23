@@ -8,6 +8,7 @@ import CategoryPage from "../pages/Category/CategoryPage";
 import NewIncome from "../pages/NewIncome/NewIncome";
 import NewExpense from "../pages/NewExpense/NewIncome";
 import styled from "styled-components";
+import Register from "../pages/Register/Register";
 
 const HomePageStyle = styled.div`
   display: flex;
@@ -118,6 +119,14 @@ const Router = ({ transactions }) => {
         element={
           <Auth>
             <Login />
+          </Auth>
+        }
+      />
+      <Route
+        path="/create-account"
+        element={
+          <Auth>
+            <Register />
           </Auth>
         }
       />
