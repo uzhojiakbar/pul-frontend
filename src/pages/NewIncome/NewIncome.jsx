@@ -8,7 +8,6 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
-  padding: 20px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -37,33 +36,13 @@ const OptionButton = styled.button`
   text-align: center;
 
   &:hover {
-    background-color: #e8f5e9; // Yashil ohang
+    background-color: #e8f5e9;
   }
 
   &.active {
     background-color: #4caf50;
     color: white;
     border: none;
-  }
-`;
-
-const ActionsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-`;
-
-const CancelButton = styled(Button)`
-  background-color: #f44336;
-  color: white;
-  border: none;
-
-  &:hover {
-    background-color: #d32f2f;
-  }
-  &:focus {
-    background-color: #d32f2f;
-    color: white;
   }
 `;
 
@@ -75,20 +54,20 @@ const ActionButton = styled(Button)`
   }
 `;
 
-const NewIncome = ({ home = 0 }) => {
+const NewIncome = ({ close = () => {}, loading, setLoading }) => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [paymentType, setPaymentType] = useState(""); // To'lov turi
-  const [selectedCategoryId, setSelectedCategoryId] = useState(""); // Kategoriya ID
-  const [loading, setLoading] = useState(false);
+  const [typeMoney, setTypeMoney] = useState(""); // "naqt" yoki "karta"
+  const [payment, setPayment] = useState(""); // "UZS" yoki "USD"
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
   const { mutate: addTransaction } = useAddTransaction();
   const { data: categories = [], isLoading: isCategoriesLoading } =
-    useCategories();
+    useCategories("income"); // Income kategoriyalarini olish
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    if (!amount || !selectedCategoryId || !paymentType) {
+    if (!amount || !selectedCategoryId || !typeMoney || !payment) {
       message.error("Hamma maydonlarni to'ldiring!");
       return;
     }
@@ -105,23 +84,25 @@ const NewIncome = ({ home = 0 }) => {
       return;
     }
 
-    // Tranzaksiyani yuborish
     addTransaction(
       {
         date: moment().format("YYYY-MM-DD"),
         category: selectedCategory.name,
         amount: parseFloat(amount),
         description,
-        type: "income",
-        payment: paymentType.toUpperCase(), // UZS yoki USD
+        type: "income", // yoki "expense"
+        typeMoney, // "naqt" yoki "karta"
+        payment, // "UZS" yoki "USD"
       },
       {
         onSuccess: () => {
           message.success("Tranzaksiya muvaffaqiyatli qo'shildi!");
           setAmount("");
           setSelectedCategoryId("");
-          setPaymentType("");
+          setTypeMoney("");
+          setPayment("");
           setLoading(false);
+          navigate("/"); // Asosiy sahifaga qaytish
         },
         onError: () => {
           message.error("Tranzaksiyani qo'shishda xatolik yuz berdi.");
@@ -129,6 +110,8 @@ const NewIncome = ({ home = 0 }) => {
         },
       }
     );
+
+    close();
   };
 
   return (
@@ -146,7 +129,7 @@ const NewIncome = ({ home = 0 }) => {
           border: "1px solid #ddd",
         }}
       />
-      <Label>Description:</Label>
+      <Label>Izoh:</Label>
       <input
         type="text"
         value={description}
@@ -161,11 +144,24 @@ const NewIncome = ({ home = 0 }) => {
 
       <Label>To'lov turi:</Label>
       <SelectionWrapper>
-        {["UZS", "Karta", "USD"].map((option) => (
+        {["naqt", "karta"].map((option) => (
           <OptionButton
             key={option}
-            onClick={() => setPaymentType(option)}
-            className={paymentType === option ? "active" : ""}
+            onClick={() => setTypeMoney(option)}
+            className={typeMoney === option ? "active" : ""}
+          >
+            {option.toUpperCase()}
+          </OptionButton>
+        ))}
+      </SelectionWrapper>
+
+      <Label>Valyuta turi:</Label>
+      <SelectionWrapper>
+        {["UZS", "USD"].map((option) => (
+          <OptionButton
+            key={option}
+            onClick={() => setPayment(option)}
+            className={payment === option ? "active" : ""}
           >
             {option}
           </OptionButton>
@@ -180,38 +176,18 @@ const NewIncome = ({ home = 0 }) => {
           {categories.map((cat) => (
             <OptionButton
               key={cat._id}
-              onClick={() => setSelectedCategoryId(cat._id)} // ID tanlanadi
+              onClick={() => setSelectedCategoryId(cat._id)}
               className={selectedCategoryId === cat._id ? "active" : ""}
             >
-              {cat.name} {/* Nomi ko'rsatiladi */}
+              {cat.name}
             </OptionButton>
           ))}
         </SelectionWrapper>
       )}
 
-      {home === 0 ? (
-        <ActionsWrapper>
-          <CancelButton onClick={() => navigate("/")}>
-            Bekor qilish
-          </CancelButton>
-          <ActionButton
-            type="primary"
-            onClick={handleSubmit}
-            disabled={loading} // Loading paytida tugma o'chiriladi
-            style={{ background: "#4caf50" }}
-          >
-            Qo'shish
-          </ActionButton>
-        </ActionsWrapper>
-      ) : (
-        <ActionButton
-          type="primary"
-          onClick={handleSubmit}
-          disabled={loading} // Loading paytida tugma o'chiriladi
-        >
-          Qo'shish
-        </ActionButton>
-      )}
+      <ActionButton type="primary" onClick={handleSubmit} disabled={loading}>
+        Qo'shish
+      </ActionButton>
     </Wrapper>
   );
 };

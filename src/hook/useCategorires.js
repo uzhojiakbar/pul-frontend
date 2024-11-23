@@ -1,34 +1,35 @@
-// hooks/useCategories.js
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import instance from "../utils/axiosInstance";
 
 // Kategoriyalarni olish
-export const useCategories = () => {
+export const useCategories = (type) => {
   return useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", type],
     queryFn: async () => {
-      const response = await instance.get("/categories");
-      return response.data; // Kategoriyalarni qaytaradi
+      const { data } = await instance.get("/categories", {
+        params: { type }, // "income" yoki "expense"
+      });
+      return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 daqiqa keshlash
+    staleTime: 1000 * 60 * 10, // 10 daqiqa
   });
 };
 
-// Kategoriya qo‘shish
+// Kategoriya qo'shish
 export const useAddCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newCategory) => {
-      const response = await instance.post("/categories", newCategory);
-      return response.data; // Yangi kategoriya
+      const { data } = await instance.post("/categories", newCategory);
+      return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]); // Ma'lumotni yangilash
+      queryClient.invalidateQueries(["categories"]);
     },
   });
 };
 
-// Kategoriya o‘chirish
+// Kategoriya o'chirish
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -36,7 +37,7 @@ export const useDeleteCategory = () => {
       await instance.delete(`/categories/${categoryId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]); // Ma'lumotni yangilash
+      queryClient.invalidateQueries(["categories"]);
     },
   });
 };

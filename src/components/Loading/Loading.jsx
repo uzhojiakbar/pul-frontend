@@ -12,6 +12,7 @@ const LoaderWrapper = styled.div`
   align-items: center;
   min-height: 100vh;
   min-width: 100vw;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;

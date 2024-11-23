@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import AddTransactionModal from "../AddTransactionModal/AddTransactionModal"; // Yangi Modal komponentini import qilish
-import { NavLink } from "react-router-dom";
+import Sidebar from "../Sidebar/Sidebar";
+import NewIncome from "../../pages/NewIncome/NewIncome";
+import Loading from "../Loading/Loading";
+import NewExpense from "../../pages/NewExpense/NewIncome";
 
 const ButtonsWrapper = styled.div`
   display: flex;
@@ -45,19 +47,51 @@ const Button = styled.button`
 `;
 
 const ActionButtons = () => {
-  const [isIncomeModalOpen, setIncomeModalOpen] = useState(false); // Kirim modal holati
-  const [isExpenseModalOpen, setExpenseModalOpen] = useState(false); // Chiqim modal holati
-
+  const [isSidebarOpenIncome, setSidebarOpenIncome] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const toggleDrawer = () => {
+    setSidebarOpenIncome(!isSidebarOpenIncome);
+  };
+  const [isSidebarOpenExpene, setSidebarOpenExpense] = useState(false);
+  const toggleDrawer2 = () => {
+    setSidebarOpenExpense(!isSidebarOpenExpene);
+  };
   return (
     <>
+      {loading && <Loading />}
+
       <ButtonsWrapper>
-        <NavLink to={"/new-expense"}>
-          <Button color="#f44336">-</Button>
-        </NavLink>
-        <NavLink to={"/new-income"}>
-          <Button color="#4caf50">+</Button>
-        </NavLink>
+        <Button onClick={toggleDrawer2} color="#f44336">
+          -
+        </Button>
+        <Button onClick={toggleDrawer} color="#4caf50">
+          +
+        </Button>
       </ButtonsWrapper>
+
+      <Sidebar
+        title="Income qo'shsh"
+        isOpen={isSidebarOpenIncome}
+        onClose={toggleDrawer}
+      >
+        <NewIncome
+          loading={loading}
+          setLoading={setLoading}
+          close={toggleDrawer}
+        />
+      </Sidebar>
+      <Sidebar
+        direction="left"
+        title="Expense qo'shsh"
+        isOpen={isSidebarOpenExpene}
+        onClose={toggleDrawer2}
+      >
+        <NewExpense
+          loading={loading}
+          setLoading={setLoading}
+          close={toggleDrawer2}
+        />
+      </Sidebar>
     </>
   );
 };

@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 import BalanceCard from "../BalanceCard/BalanceCard";
+import { useTransactions } from "../../hook/useTransactions";
 
 const { Panel } = Collapse;
 
@@ -111,7 +112,9 @@ const BalanceCardWrapper = styled.div`
   }
 `;
 
-const TransactionsList = ({ transactions }) => {
+const TransactionsList = ({ filters }) => {
+  const { data: transactions, isLoading } = useTransactions(filters);
+
   const formatDate = (date) =>
     moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
 
@@ -120,7 +123,7 @@ const TransactionsList = ({ transactions }) => {
       let Icon;
       let iconColor = item.type === "income" ? "#4caf50" : "#f44336";
 
-      if (item.payment === "KARTA") {
+      if (item.typeMoney === "karta") {
         Icon = (
           <CreditCardOutlined style={{ color: iconColor, fontSize: "16px" }} />
         );
@@ -149,7 +152,11 @@ const TransactionsList = ({ transactions }) => {
           </TransactionDetails>
           <div className="amount-wrapper">
             {Icon}
-            <span>{item.amount.toLocaleString()} UZS</span>
+            <span>
+              {item.payment === "USD"
+                ? `${item.amount.toLocaleString()} USD`
+                : `${item.amount.toLocaleString()} UZS`}
+            </span>
           </div>
         </TransactionItem>
       );
@@ -187,9 +194,11 @@ const TransactionsList = ({ transactions }) => {
             {sortedDates.map((date) => {
               const dayTransactions = groupedTransactions[date];
               const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
+                const amount =
+                  item.payment === "USD"
+                    ? item.amount * 12000 // USD -> UZS konvertatsiyasi
+                    : item.amount;
+                return item.type === "income" ? sum + amount : sum - amount;
               }, 0);
 
               return (

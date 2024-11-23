@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
   WalletOutlined,
@@ -7,6 +7,10 @@ import {
 } from "@ant-design/icons";
 
 import { useBalance } from "../../hook/useBalance";
+import Loading from "../Loading/Loading";
+import NewExpense from "../../pages/NewExpense/NewIncome";
+import NewIncome from "../../pages/NewIncome/NewIncome";
+import Sidebar from "../Sidebar/Sidebar";
 
 const Card = styled.div`
   margin: 0 16px;
@@ -15,7 +19,8 @@ const Card = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-height: 15vh; /* Maximal balandlik */
+  max-height: 15vh; // Maximal balandlik
+  min-height: 100px;
   height: fit-content;
   display: flex;
   flex-direction: column;
@@ -59,21 +64,58 @@ const Amount = styled.span`
   color: #4caf50;
 `;
 
-const BalanceCard = ({ naqd, karta, dollar }) => {
+const Button = styled.button`
+  width: 60px;
+  height: 60px;
+  background-color: ${({ color }) => color};
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+`;
+
+const BalanceCard = () => {
   const { data: balance, isLoading } = useBalance();
+
+  const [isSidebarOpenIncome, setSidebarOpenIncome] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const toggleDrawer = () => {
+    setSidebarOpenIncome(!isSidebarOpenIncome);
+  };
+  const [isSidebarOpenExpene, setSidebarOpenExpense] = useState(false);
+  const toggleDrawer2 = () => {
+    setSidebarOpenExpense(!isSidebarOpenExpene);
+  };
 
   return (
     <Card>
+      {loading && <Loading />}
+
       <TotalBalance>Umumiy hisob: UZS {balance?.all?.uzs}</TotalBalance>
       <SubBalances>
+        <Button onClick={toggleDrawer2} color="#f44336">
+          -
+        </Button>{" "}
         <SubBalanceItem>
           <WalletOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
           <Amount>{balance?.uzs.toLocaleString()} UZS </Amount>
-        </SubBalanceItem>
-        <Divider />
-        <SubBalanceItem>
-          <CreditCardOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
-          <Amount>{balance?.card} UZS </Amount>
         </SubBalanceItem>
         <Divider />
         <SubBalanceItem>
@@ -82,7 +124,34 @@ const BalanceCard = ({ naqd, karta, dollar }) => {
           />
           <Amount> {balance?.usd.toLocaleString()} USD</Amount>
         </SubBalanceItem>
+        <Button onClick={toggleDrawer} color="#4caf50">
+          +
+        </Button>
       </SubBalances>
+
+      <Sidebar
+        title="Income qo'shsh"
+        isOpen={isSidebarOpenIncome}
+        onClose={toggleDrawer}
+      >
+        <NewIncome
+          loading={loading}
+          setLoading={setLoading}
+          close={toggleDrawer}
+        />
+      </Sidebar>
+      <Sidebar
+        direction="left"
+        title="Expense qo'shsh"
+        isOpen={isSidebarOpenExpene}
+        onClose={toggleDrawer2}
+      >
+        <NewExpense
+          loading={loading}
+          setLoading={setLoading}
+          close={toggleDrawer2}
+        />
+      </Sidebar>
     </Card>
   );
 };
