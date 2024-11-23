@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import instance from "../utils/axiosInstance"; // Axios konfiguratsiyasi uchun fayl
 
 // Tranzaktsiyalarni olish
@@ -24,14 +24,28 @@ export const useTransactions = (filters) => {
 };
 
 // Tranzaktsiya qo'shish
+// export const useAddTransaction = () => {
+//   return useMutation({
+//     mutationFn: async (transactionData) => {
+//       const response = await instance.post(
+//         "/transactions/add",
+//         transactionData
+//       );
+//       return response.data;
+//     },
+//   });
+// };
 export const useAddTransaction = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async (transactionData) => {
-      const response = await instance.post(
-        "/transactions/add",
-        transactionData
-      );
+    mutationFn: async (newTransaction) => {
+      const response = await instance.post("/transactions/add", newTransaction);
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["transactions"]); // Tranzaksiyalarni yangilash
+      queryClient.invalidateQueries(["balance"]); // Balansni yangilash
     },
   });
 };

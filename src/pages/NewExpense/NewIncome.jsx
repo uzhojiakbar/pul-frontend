@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Button, message } from "antd";
 import { useAddTransaction } from "../../hook/useTransactions";
 import { useCategories } from "../../hook/useCategorires";
+import { useBalance } from "../../hook/useBalance"; // Balans hook
 import Loading from "../../components/Loading/Loading";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
@@ -85,6 +86,7 @@ const NewExpense = ({ home = 0 }) => {
   const { mutate: addTransaction } = useAddTransaction();
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useCategories();
+  const { refetch: refetchBalance } = useBalance(); // Balansni yangilash
   const navigate = useNavigate();
 
   const handleSubmit = () => {
@@ -108,24 +110,23 @@ const NewExpense = ({ home = 0 }) => {
 
     addTransaction(
       {
-        date: moment().format("YYYY-MM-DD"), // Bugungi sana avtomatik
-        category: selectedCategory.name, // Nomi backendga yuboriladi
+        date: moment().format("YYYY-MM-DD"),
+        category: selectedCategory.name,
         amount: parseFloat(amount),
         description,
         type: "expense",
-        payment: paymentType.toLowerCase(), // To'lov turi kichik harf bilan yuboriladi
+        payment: paymentType.toUpperCase(), // UZS yoki USD
       },
       {
         onSuccess: () => {
           message.success("Tranzaksiya muvaffaqiyatli qo'shildi!");
-          setAmount(""); // Maydonlarni tozalash
+          setAmount("");
           setSelectedCategoryId("");
-          setPaymentType(""); // Default qiymatga qaytarish
+          setPaymentType("");
           setLoading(false);
-          navigate("/"); // Home sahifasiga o'tish
         },
         onError: () => {
-          message.error("Tranzaksiya qo'shishda xatolik yuz berdi.");
+          message.error("Tranzaksiyani qo'shishda xatolik yuz berdi.");
           setLoading(false);
         },
       }
@@ -162,7 +163,7 @@ const NewExpense = ({ home = 0 }) => {
 
       <Label>To'lov turi:</Label>
       <SelectionWrapper>
-        {["Naqd", "Karta", "USD"].map((option) => (
+        {["UZS", "Karta", "USD"].map((option) => (
           <OptionButton
             key={option}
             onClick={() => setPaymentType(option)}

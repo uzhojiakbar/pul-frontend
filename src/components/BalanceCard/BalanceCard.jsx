@@ -61,9 +61,6 @@ const Amount = styled.span`
 
 const BalanceCard = ({ naqd, karta, dollar }) => {
   const { data: balance, isLoading } = useBalance();
-  console.log(balance);
-
-  const totalBalance = naqd + karta + dollar;
 
   return (
     <Card>

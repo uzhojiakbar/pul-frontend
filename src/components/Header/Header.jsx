@@ -4,10 +4,12 @@ import {
   FilterOutlined,
   MenuFoldOutlined,
   DollarCircleOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons"; // Ant Design'dan kerakli ikonlar
 import { Dropdown, Menu } from "antd";
 import BalanceCard from "../BalanceCard/BalanceCard";
 import { NavLink } from "react-router-dom";
+import { useBalance } from "../../hook/useBalance";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -108,16 +110,21 @@ const LeftWrapper = styled.div`
 `;
 
 const Header = ({ setFilterModalOpen }) => {
+  const { data: balance, isLoading } = useBalance();
+
   const menu = (
     <Menu>
       <Menu.Item key="1">
-        <span>Naqd:</span> <span style={{ float: "right" }}>UZS 1,200,000</span>
+        <span>Naqd:</span>{" "}
+        <span style={{ float: "right" }}> {balance?.uzs} UZS</span>
       </Menu.Item>
       <Menu.Item key="2">
-        <span>Karta:</span> <span style={{ float: "right" }}>UZS 800,000</span>
+        <span>Karta:</span>{" "}
+        <span style={{ float: "right" }}> {balance?.card} UZS</span>
       </Menu.Item>
       <Menu.Item key="3">
-        <span>Dollar:</span> <span style={{ float: "right" }}>USD 600</span>
+        <span>Dollar:</span>{" "}
+        <span style={{ float: "right" }}> {balance?.usd} USD</span>
       </Menu.Item>
     </Menu>
   );
@@ -133,7 +140,7 @@ const Header = ({ setFilterModalOpen }) => {
           </TitleWrapper>
 
           <Dropdown overlay={menu} trigger={["hover"]}>
-            <BalanceDisplay>Umumiy: UZS 2,600,000</BalanceDisplay>
+            <BalanceDisplay>Umumiy: {balance?.all?.uzs} UZS </BalanceDisplay>
           </Dropdown>
         </LeftWrapper>
         {/* Right Side: Filter Icon */}

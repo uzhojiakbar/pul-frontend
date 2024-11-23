@@ -109,7 +109,7 @@ const Login = () => {
               loading={loading}
               block
             >
-              Вход
+              Kirish
             </StyledButton>
           </Form.Item>
         </Form>

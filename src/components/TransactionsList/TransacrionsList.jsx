@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Collapse, Empty } from "antd";
+import {
+  CreditCardOutlined,
+  WalletOutlined,
+  DollarCircleOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import BalanceCard from "../BalanceCard/BalanceCard";
 
@@ -25,10 +30,24 @@ const TransactionItem = styled.div`
     border-bottom: none;
   }
 
-  span {
+  .amount-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 14px;
+    font-weight: bold;
     color: ${({ type }) => (type === "expense" ? "#f44336" : "#4caf50")};
   }
+
+  span {
+    font-size: 14px;
+  }
+`;
+
+const IndicatorWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const Indicator = styled.div`
@@ -39,7 +58,6 @@ const Indicator = styled.div`
   border-radius: 50%;
   box-shadow: 0 0 5px 2px
     ${({ type }) => (type === "expense" ? "#f44336" : "#4caf50")};
-  margin-right: 8px;
 `;
 
 const TransactionDetails = styled.div`
@@ -98,18 +116,44 @@ const TransactionsList = ({ transactions }) => {
     moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
 
   const renderTransactionItems = (items) =>
-    items.map((item, index) => (
-      <TransactionItem key={index} type={item.type}>
-        <TransactionDetails>
-          <Indicator type={item.type} />
-          <div className="2">
-            <p className="title">{item.category}</p>
-            <p>{item.description}</p>
+    items.reverse().map((item, index) => {
+      let Icon;
+      let iconColor = item.type === "income" ? "#4caf50" : "#f44336";
+
+      if (item.payment === "KARTA") {
+        Icon = (
+          <CreditCardOutlined style={{ color: iconColor, fontSize: "16px" }} />
+        );
+      } else if (item.payment === "USD") {
+        Icon = (
+          <DollarCircleOutlined
+            style={{ color: iconColor, fontSize: "16px" }}
+          />
+        );
+      } else {
+        Icon = (
+          <WalletOutlined style={{ color: iconColor, fontSize: "16px" }} />
+        );
+      }
+
+      return (
+        <TransactionItem key={index} type={item.type}>
+          <TransactionDetails>
+            <IndicatorWrapper>
+              <Indicator type={item.type} />
+              <div>
+                <p className="title">{item.category}</p>
+                <p>{item.description}</p>
+              </div>
+            </IndicatorWrapper>
+          </TransactionDetails>
+          <div className="amount-wrapper">
+            {Icon}
+            <span>{item.amount.toLocaleString()} UZS</span>
           </div>
-        </TransactionDetails>
-        <span>UZS {item.amount.toLocaleString()}</span>
-      </TransactionItem>
-    ));
+        </TransactionItem>
+      );
+    });
 
   // Tranzaktsiyalarni guruhlash
   const groupedTransactions = transactions.reduce((acc, transaction) => {
@@ -120,6 +164,11 @@ const TransactionsList = ({ transactions }) => {
     acc[date].push(transaction);
     return acc;
   }, {});
+
+  // Sanalarni kamayish tartibida tartiblash
+  const sortedDates = Object.keys(groupedTransactions).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
 
   return (
     <>
@@ -135,190 +184,7 @@ const TransactionsList = ({ transactions }) => {
       ) : (
         <ListWrapper>
           <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                return item.type === "income"
-                  ? sum + item.amount
-                  : sum - item.amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-
-          <Collapse>
-            {Object.keys(groupedTransactions).map((date) => {
+            {sortedDates.map((date) => {
               const dayTransactions = groupedTransactions[date];
               const total = dayTransactions.reduce((sum, item) => {
                 return item.type === "income"

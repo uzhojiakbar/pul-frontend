@@ -95,7 +95,6 @@ const NewIncome = ({ home = 0 }) => {
 
     setLoading(true);
 
-    // Kategoriyaning nomini tanlash
     const selectedCategory = categories.find(
       (cat) => cat._id === selectedCategoryId
     );
@@ -106,26 +105,26 @@ const NewIncome = ({ home = 0 }) => {
       return;
     }
 
+    // Tranzaksiyani yuborish
     addTransaction(
       {
-        date: moment().format("YYYY-MM-DD"), // Bugungi sana avtomatik
-        category: selectedCategory.name, // Nomi backendga yuboriladi
+        date: moment().format("YYYY-MM-DD"),
+        category: selectedCategory.name,
         amount: parseFloat(amount),
         description,
         type: "income",
-        payment: paymentType.toLowerCase(), // To'lov turi kichik harf bilan yuboriladi
+        payment: paymentType.toUpperCase(), // UZS yoki USD
       },
       {
         onSuccess: () => {
           message.success("Tranzaksiya muvaffaqiyatli qo'shildi!");
-          setAmount(""); // Maydonlarni tozalash
+          setAmount("");
           setSelectedCategoryId("");
-          setPaymentType(""); // Default qiymatga qaytarish
+          setPaymentType("");
           setLoading(false);
-          navigate("/"); // Home sahifasiga o'tish
         },
         onError: () => {
-          message.error("Tranzaksiya qo'shishda xatolik yuz berdi.");
+          message.error("Tranzaksiyani qo'shishda xatolik yuz berdi.");
           setLoading(false);
         },
       }
@@ -162,7 +161,7 @@ const NewIncome = ({ home = 0 }) => {
 
       <Label>To'lov turi:</Label>
       <SelectionWrapper>
-        {["Naqd", "Karta", "USD"].map((option) => (
+        {["UZS", "Karta", "USD"].map((option) => (
           <OptionButton
             key={option}
             onClick={() => setPaymentType(option)}
