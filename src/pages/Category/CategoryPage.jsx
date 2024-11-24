@@ -1,76 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { Button, List, Input, Modal, message, Divider, Tag, Flex } from "antd";
+import {
+  Button,
+  List,
+  Input,
+  Modal,
+  message,
+  Divider,
+  Tag,
+  Select,
+} from "antd";
+// Import qismi
+import EmojiPicker from "emoji-picker-react"; // Default export sifatida import qiling
 import {
   useCategories,
   useAddCategory,
   useDeleteCategory,
 } from "../../hook/useCategorires";
 import Loading from "../../components/Loading/Loading";
-import { PlusOutlined } from "@ant-design/icons";
-import { Select } from "antd";
+import { PlusOutlined, SmileOutlined } from "@ant-design/icons";
 
 const PageWrapper = styled.div`
   width: 100%;
-`;
-
-const Title = styled.h1`
-  text-align: center;
-  color: #4caf50;
-  font-size: 24px;
-  font-weight: bold;
-
-  @media (max-width: 480px) {
-    font-size: 20px;
-  }
+  padding: 20px;
 `;
 
 const StyledButton = styled(Button)`
   background-color: ${({ tur }) => (tur === "del" ? "white" : "#4caf50")};
-
   color: ${({ tur }) => (tur === "del" ? "#f44336" : "white")};
-  transition: 0.2s;
   border: 2px solid transparent;
   padding: 10px 20px;
   width: 100% !important;
-
   text-align: left !important;
+  border-radius: 8px;
 
   &:hover {
-    background-color: ${({ tur }) =>
-      tur === "del" ? "white" : "white"} !important;
+    background-color: white !important;
     color: ${({ tur }) => (tur === "del" ? "#f44336" : "#4caf50")} !important;
     border: 2px solid ${({ tur }) => (tur === "del" ? "#f44336" : "#4caf50")} !important;
   }
-
-  &:active {
-    background-color: ${({ tur }) =>
-      tur === "del" ? "#f44336" : "#4caf50"} !important;
-    color: ${({ tur }) => (tur === "del" ? "white" : "white")} !important;
-    border: 2px solid ${({ tur }) => (tur === "del" ? "#f44336" : "#4caf50")} !important;
-  }
-
-  @media (max-width: 480px) {
-    .name {
-      display: none;
-    }
-
-    .icon {
-      font-size: 14px;
-    }
-  }
-`;
-
-const StyledDivider = styled(Divider)`
-  margin: 12px 0;
-  border-top: 2px solid rgb(0, 0, 0, 0.1);
-`;
-
-const CategoryList = styled(List)`
-  margin-top: 16px;
-  background: #fff;
-  border-radius: 8px;
-  width: 100%;
 `;
 
 const StyledModal = styled(Modal)`
@@ -90,70 +58,68 @@ const StyledModal = styled(Modal)`
     font-weight: bold;
     color: #4caf50;
   }
+`;
 
-  .ant-modal-footer {
-    border-top: none;
-  }
+const EmojiPickerWrapper = styled.div`
+  position: absolute;
+  z-index: 1000;
+  top: 50px;
+  left: 0;
+  background: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 10px;
 `;
 
 const StyledListItem = styled(List.Item)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 18px; /* Yozuv kattaligi oshirildi */
-  width: 100%;
-
-  @media (max-width: 480px) {
-    display: flex;
-    flex-direction: column; /* Telefon versiyada vertikal joylashuv */
-    align-items: flex-start;
-    width: 100%;
-    gap: 10px; /* Ma'lumotlar orasidagi bo‘shliq */
-  }
+  padding: 10px 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 8px;
 `;
 
-const StyledTag = styled(Tag)`
-  font-size: 16px; /* Tag yozuvi kattaligi oshirildi */
-`;
 const InfoPage = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Chapga joylash */
-  justify-content: center;
-  gap: 5px;
-  width: 100%;
-
-  .info {
-    width: fit-content;
-  }
+  gap: 8px;
 `;
 
 const CategoryPage = () => {
-  const { data: categories = [], isLoading } = useCategories(); // Hammasini oladi
+  const { data: categories = [], isLoading } = useCategories();
   const addCategory = useAddCategory();
   const deleteCategory = useDeleteCategory();
 
   const [newCategory, setNewCategory] = useState("");
-  const [newCategoryType, setNewCategoryType] = useState("income"); // Kirim/chiqim
+
+  const [newCategoryType, setNewCategoryType] = useState("income");
+
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const [newCategoryEmoji, setNewCategoryEmoji] = useState("😊"); // Default emoji
+  const emojiPickerRef = useRef(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
 
   const handleAddCategory = () => {
-    setGlobalLoading(true);
-
     if (!newCategory.trim()) {
       message.error("Kategoriya nomi bo‘sh bo‘lishi mumkin emas!");
-      setGlobalLoading(false);
       return;
     }
 
+    setGlobalLoading(true);
+
     addCategory.mutate(
-      { name: newCategory, type: newCategoryType },
+      { name: newCategory, type: newCategoryType, emoji: newCategoryEmoji },
       {
         onSuccess: () => {
           message.success("Kategoriya muvaffaqiyatli qo‘shildi!");
           setNewCategory("");
           setNewCategoryType("income");
+          setNewCategoryEmoji("😊");
           setIsModalOpen(false);
           setGlobalLoading(false);
         },
@@ -166,148 +132,123 @@ const CategoryPage = () => {
   };
 
   const handleDeleteCategory = (id) => {
-    setGlobalLoading(true);
-
     deleteCategory.mutate(id, {
-      onSuccess: () => {
-        message.success("Kategoriya muvaffaqiyatli o‘chirildi!");
-        setGlobalLoading(false);
-      },
-      onError: () => {
-        message.error("Kategoriya o‘chirishda xatolik yuz berdi.");
-        setGlobalLoading(false);
-      },
+      onSuccess: () => message.success("Kategoriya muvaffaqiyatli o‘chirildi!"),
+      onError: () => message.error("Kategoriya o‘chirishda xatolik yuz berdi."),
     });
   };
 
+  const handleEmojiSelect = (event, emojiObject) => {
+    setNewCategoryEmoji(emojiObject.emoji); // Tanlangan emoji Unicode
+    setEmojiPickerOpen(false); // Tanlangandan keyin yopish
+  };
+
+  // Komponent tashqarisiga bosilganda EmojiPicker-ni yopish
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
+        setEmojiPickerOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <PageWrapper>
       {globalLoading && <Loading />}
-      <Flex justify="space-between" align="center">
-        <StyledButton onClick={() => setIsModalOpen(true)}>
-          <PlusOutlined className="icon" />
-          <span>Kategoriya qo‘shish</span>
-        </StyledButton>
-      </Flex>
-      {/* Kategoriya qo‘shish modali */}
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        icon={<PlusOutlined />}
+        style={{
+          marginBottom: "16px",
+          backgroundColor: "#4caf50",
+          color: "white",
+          borderRadius: "8px",
+          padding: "10px 20px",
+        }}
+      >
+        Kategoriya qo‘shish
+      </Button>
       <StyledModal
-        title={
-          <div
-            style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              color: "#4caf50",
-            }}
-          >
-            Yangi kategoriya qo‘shish
-          </div>
-        }
+        title="Yangi kategoriya qo‘shish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[
           <Button
             onClick={handleAddCategory}
             style={{
-              padding: "10px 20px",
               backgroundColor: "#4caf50",
               color: "white",
-              border: "2px solid #4caf50",
               borderRadius: "8px",
-              transition: "0.3s",
-              fontSize: "16px",
             }}
           >
             Qo‘shish
           </Button>,
         ]}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            padding: "10px 20px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Input
-              placeholder="Kategoriya nomi"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <div style={{ position: "relative" }}>
+            <Button
+              icon={<SmileOutlined />}
+              onClick={() => setEmojiPickerOpen((prev) => !prev)}
               style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "8px",
+                backgroundColor: "white",
                 border: "1px solid #ddd",
                 fontSize: "16px",
-                height: "40px",
-              }}
-            />
-            <Select
-              value={newCategoryType}
-              onChange={(value) => setNewCategoryType(value)}
-              style={{
-                width: "150px",
                 borderRadius: "8px",
-                fontSize: "16px",
-                height: "40px",
               }}
-              options={[
-                { value: "income", label: "Kirim" },
-                { value: "expense", label: "Chiqim" },
-              ]}
-            />
+            >
+              {newCategoryEmoji} {/* Tanlangan emoji */}
+            </Button>
+
+            {emojiPickerOpen && (
+              <EmojiPickerWrapper ref={emojiPickerRef}>
+                <EmojiPicker onEmojiClick={handleEmojiSelect} />
+              </EmojiPickerWrapper>
+            )}
           </div>
+          <Input
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Kategoriya nomi"
+            style={{ flex: 1, borderRadius: "8px" }}
+          />
+          <Select
+            value={newCategoryType}
+            onChange={(value) => setNewCategoryType(value)}
+            options={[
+              { value: "income", label: "Kirim" },
+              { value: "expense", label: "Chiqim" },
+            ]}
+            style={{ width: "150px", borderRadius: "8px" }}
+          />
         </div>
       </StyledModal>
-      ;{/* Kategoriyalar ro‘yxati */}
-      <CategoryList
-        loading={isLoading}
-        bordered
+      <List
         dataSource={categories}
         renderItem={(item) => (
-          <>
-            <StyledListItem>
-              <InfoPage
-                style={{
-                  textTransform: "capitalize",
-                  gap: "5px",
-                  fontWeight: "600",
-                }}
-              >
-                <span>{item.name}</span>
-                <StyledTag
-                  className="info"
-                  color={item.type === "income" ? "green" : "red"}
-                >
-                  {item.type === "income" ? "Kirim" : "Chiqim"}
-                </StyledTag>
-              </InfoPage>
-
-              <div>
-                <StyledButton
-                  type="link"
-                  danger
-                  tur={"del"}
-                  onClick={() => handleDeleteCategory(item._id)}
-                  style={{
-                    width: "100%",
-                    marginTop: "10px",
-                  }}
-                >
-                  O‘chirish
-                </StyledButton>
-              </div>
-            </StyledListItem>
-            <StyledDivider />
-          </>
+          <StyledListItem>
+            <InfoPage>
+              <span>
+                {item.emoji} {item.name}
+              </span>
+              <Tag color={item.type === "income" ? "green" : "red"}>
+                {item.type === "income" ? "Kirim" : "Chiqim"}
+              </Tag>
+            </InfoPage>
+            <StyledButton
+              tur="del"
+              onClick={() => handleDeleteCategory(item._id)}
+            >
+              O‘chirish
+            </StyledButton>
+          </StyledListItem>
         )}
       />
     </PageWrapper>
