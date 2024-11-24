@@ -19,11 +19,6 @@ const HeaderWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 999;
 
   @media (max-width: 768px) {
     padding: 12px 16px;
@@ -100,8 +95,22 @@ const SidebarMenu = styled(MenuOutlined)`
 `;
 
 const MainWrapper = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  padding: 16px 0;
+
   .balance {
-    display: none;
+    /* display: none; */
 
     @media (max-width: 768px) {
       display: block;

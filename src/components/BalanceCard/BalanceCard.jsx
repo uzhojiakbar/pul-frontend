@@ -36,24 +36,25 @@ const TotalBalance = styled.div`
 
 const SubBalances = styled.div`
   display: flex;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: space-between;
+  align-items: stretch; /* Elementlarni butun balandlikka cho'zish */
+  height: 60px;
   margin-top: 8px;
-  gap: 5px;
 `;
 
 const SubBalanceItem = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center; /* O'rtaga joylash */
   align-items: center;
   gap: 4px;
   font-size: 12px;
   font-weight: 500;
   color: #757575;
+  flex-grow: 1; /* Tugmalar bo'sh joyni qoplamasligi uchun o'rtadagi itemlar cho'ziladi */
 `;
 
 const Divider = styled.div`
-  height: 24px;
   width: 1px;
   background-color: #e0e0e0;
 `;
@@ -63,27 +64,31 @@ const Amount = styled.span`
   font-weight: bold;
   color: #4caf50;
 `;
-
 const Button = styled.button`
-  width: 60px;
-  height: 60px;
+  height: auto;
   background-color: ${({ color }) => color};
   border: none;
-  border-radius: 50%;
+  border-radius: 8px; /* Burchaklarni biroz dumaloq qilish */
   font-size: 24px;
   color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1; /* Bo'sh joyni qoplash */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
 
   &:focus {
     outline: none;
-  }
-  &:hover {
-    opacity: 0.8;
-  }
-  &:active {
-    opacity: 0.9;
   }
 
   @media (max-width: 1024px) {
