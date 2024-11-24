@@ -4,19 +4,30 @@ import {
   FilterOutlined,
   MenuFoldOutlined,
   DollarCircleOutlined,
+  MenuOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { Dropdown, Menu } from "antd";
-import BalanceCard from "../BalanceCard/BalanceCard";
 import Sidebar from "../Sidebar/Sidebar.jsx"; // Sidebar Component
 import { NavLink } from "react-router-dom";
-import { useBalance } from "../../hook/useBalance";
+import BalanceCard from "../BalanceCard/BalanceCard";
 import CategoryPage from "../../pages/Category/CategoryPage.jsx";
+import { logoutUser } from "../../utils/auth.js";
 
 const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 16px 24px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  @media (max-width: 768px) {
+    padding: 12px 16px;
+  }
 `;
 
 const TitleWrapper = styled(NavLink)`
@@ -33,73 +44,178 @@ const TitleWrapper = styled(NavLink)`
 `;
 
 const Logo = styled(DollarCircleOutlined)`
-  font-size: 24px;
+  font-size: 28px;
   color: #4caf50;
 `;
 
 const Title = styled.h1`
-  font-size: 18px;
+  font-size: 20px;
   color: #4caf50;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 `;
 
 const IconsWrapper = styled.div`
   display: flex;
-  gap: 16px;
-  padding: 5px;
+  align-items: center;
+  gap: 20px;
 
-  outline: none;
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #4caf50;
+    cursor: pointer;
 
-  * {
-    outline: none;
+    &:hover {
+      color: #388e3c;
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: none; /* Mobilda faqat Dropdown ko'rinadi */
+  }
+`;
+
+const MobileDropdown = styled(Dropdown)`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const SidebarMenu = styled(MenuOutlined)`
+  font-size: 24px;
+  color: #4caf50;
+  cursor: pointer;
+
+  &:hover {
+    color: #388e3c;
   }
 `;
 
 const MainWrapper = styled.div`
-  position: sticky;
-  top: 0;
-  left: 0;
-  backdrop-filter: blur(4px);
-  z-index: 2;
+  .balance {
+    display: none;
 
-  width: 100%;
-
-  padding: 5px 0;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-
-  @media (min-width: 1024px) {
-    .balance {
-      display: none;
+    @media (max-width: 768px) {
+      display: block;
     }
   }
 `;
 
 const Header = ({ setFilterModalOpen }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const toggleDrawer = () => {
-    setSidebarOpen(!isSidebarOpen);
+  const toggleDrawer = () => setSidebarOpen(!isSidebarOpen);
+
+  const logoutUserFunc = () => {
+    document.location.reload();
+    logoutUser();
   };
+
+  const mobileMenu = (
+    <Menu
+      style={{
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+        backgroundColor: "#f9f9f9",
+        padding: "8px",
+      }}
+    >
+      <Menu.Item
+        key="filter"
+        style={{
+          padding: "12px 16px",
+          borderBottom: "1px solid #e0e0e0",
+          fontWeight: "bold",
+          color: "#4caf50",
+          cursor: "pointer",
+        }}
+        onClick={() => setFilterModalOpen(true)}
+      >
+        <FilterOutlined style={{ marginRight: "8px", color: "#4caf50" }} />
+        Filtrlar
+      </Menu.Item>
+      <Menu.Item
+        key="menu"
+        style={{
+          padding: "12px 16px",
+          borderBottom: "1px solid #e0e0e0",
+          fontWeight: "bold",
+          color: "#4caf50",
+          cursor: "pointer",
+        }}
+        onClick={toggleDrawer}
+      >
+        <MenuFoldOutlined style={{ marginRight: "8px", color: "#4caf50" }} />
+        Kategoriyalar
+      </Menu.Item>
+      <Menu.Item
+        key="logout"
+        style={{
+          padding: "12px 16px",
+          fontWeight: "bold",
+          color: "#f44336",
+          cursor: "pointer",
+        }}
+        onClick={logoutUserFunc}
+      >
+        <LogoutOutlined style={{ marginRight: "8px", color: "#f44336" }} />
+        Chiqish
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <MainWrapper>
       <HeaderWrapper>
         {/* Left Side */}
-        <TitleWrapper to={"/"}>
+        <TitleWrapper to="/">
           <Logo />
           <Title>WEALTHY</Title>
         </TitleWrapper>
 
-        {/* Right Side */}
+        {/* Right Side - Desktop */}
         <IconsWrapper>
-          <FilterOutlined
+          <div
+            className="icon-wrapper"
             onClick={() => setFilterModalOpen(true)}
-            style={{ fontSize: "20px", color: "#4caf50", cursor: "pointer" }}
-          />
-          <MenuFoldOutlined
-            onClick={() => setSidebarOpen(true)}
-            style={{ fontSize: "20px", color: "#4caf50", cursor: "pointer" }}
-          />
+          >
+            <FilterOutlined />
+            <span>Filtrlar</span>
+          </div>
+          <div className="icon-wrapper" onClick={toggleDrawer}>
+            <MenuFoldOutlined /> <span>Kategoriyalar</span>
+          </div>
+          <div className="icon-wrapper" onClick={logoutUserFunc}>
+            <LogoutOutlined
+              style={{
+                fontSize: "20px",
+                color: "#f44336",
+                cursor: "pointer",
+              }}
+              title="Chiqish"
+            />
+            <span
+              style={{
+                color: "#f44336",
+                cursor: "pointer",
+              }}
+            >
+              Chiqish
+            </span>
+          </div>
         </IconsWrapper>
+
+        {/* Right Side - Mobile */}
+        <MobileDropdown overlay={mobileMenu} trigger={["click"]}>
+          <SidebarMenu />
+        </MobileDropdown>
       </HeaderWrapper>
 
       <div className="balance">

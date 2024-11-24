@@ -1,230 +1,265 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Collapse, Empty } from "antd";
+import { Collapse, Empty, Modal, Button, Tooltip } from "antd";
 import {
   CreditCardOutlined,
   WalletOutlined,
   DollarCircleOutlined,
+  DownOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import BalanceCard from "../BalanceCard/BalanceCard";
 import { useTransactions } from "../../hook/useTransactions";
 
 const { Panel } = Collapse;
 
+// Wrapper for the entire list
 const ListWrapper = styled.div`
   margin: 16px;
-  background-color: #ffffff;
-  border-radius: 8px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
   height: fit-content;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
+// Transaction item container
 const TransactionItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
-  border-bottom: 2px solid #c5c2c2;
+  padding: 12px 20px;
+  border-bottom: 1px solid #ddd;
+  background-color: ${({ type }) =>
+    type === "income"
+      ? "rgba(129, 199, 132, 0.2)"
+      : "rgba(229, 115, 115, 0.2)"};
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease;
 
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    background-color: ${({ type }) =>
+      type === "income"
+        ? "rgba(129, 199, 132, 0.3)"
+        : "rgba(229, 115, 115, 0.3)"};
+    cursor: pointer;
   }
 
   .amount-wrapper {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
-    color: ${({ type }) => (type === "expense" ? "#f44336" : "#4caf50")};
+    color: ${({ type }) => (type === "income" ? "#4caf50" : "#e57373")};
   }
 
   span {
     font-size: 14px;
+    font-weight: 500;
   }
 `;
 
-const IndicatorWrapper = styled.div`
+// Icon and details container
+const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-`;
+  gap: 12px;
 
-const Indicator = styled.div`
-  width: 12px;
-  height: 12px;
-  background-color: ${({ type }) =>
-    type === "expense" ? "#f44336" : "#4caf50"};
-  border-radius: 50%;
-  box-shadow: 0 0 5px 2px
-    ${({ type }) => (type === "expense" ? "#f44336" : "#4caf50")};
-`;
+  .icon {
+    font-size: 24px;
+    color: ${({ type }) => (type === "income" ? "#4caf50" : "#e57373")};
+  }
 
-const TransactionDetails = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  .details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-  .title {
-    font-size: 15px;
-    font-weight: 600;
+  .category {
+    font-weight: bold;
     text-transform: capitalize;
   }
 
-  p {
-    margin: 0;
-    font-size: 14px;
+  .description {
+    font-size: 12px;
+    color: #757575;
   }
 `;
 
 const DateSummary = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
   font-weight: bold;
+  padding: 10px 0;
 `;
 
 const NoDataWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 40px;
   text-align: center;
-  background-color: #fafafa;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
+  padding: 40px;
+  color: #757575;
 
-const NoDataText = styled.h3`
-  color: #8c8c8c;
-  font-weight: 500;
-`;
-
-const BalanceCardWrapper = styled.div`
-  display: block;
-  position: sticky;
-  backdrop-filter: blur(2px);
-  z-index: 1;
-  top: 10vh;
-  @media (max-width: 1024px) {
-    display: none; /* Kompyuter versiyada yashirish */
+  h3 {
+    margin-top: 16px;
   }
 `;
 
-const TransactionsList = ({ filters }) => {
+const CustomCollapseIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  cursor: pointer;
+
+  .ant-collapse-arrow {
+    display: none;
+  }
+`;
+
+const TransactionsList = () => {
+  const filters = {}; // Filtirlar uchun shablon
   const { data: transactions = [], isLoading } = useTransactions(filters);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const formatDate = (date) =>
-    moment(date, "YYYY-MM-DD").format("DD-MMMM YYYY");
-
-  const renderTransactionItems = (items) =>
-    items.reverse().map((item, index) => {
-      let Icon;
-      let iconColor = item.type === "income" ? "#4caf50" : "#f44336";
-
-      if (item.typeMoney === "karta") {
-        Icon = (
-          <CreditCardOutlined style={{ color: iconColor, fontSize: "16px" }} />
-        );
-      } else if (item.payment === "USD") {
-        Icon = (
-          <DollarCircleOutlined
-            style={{ color: iconColor, fontSize: "16px" }}
-          />
-        );
-      } else {
-        Icon = (
-          <WalletOutlined style={{ color: iconColor, fontSize: "16px" }} />
-        );
-      }
-
-      return (
-        <TransactionItem key={index} type={item.type}>
-          <TransactionDetails>
-            <IndicatorWrapper>
-              <Indicator type={item.type} />
-              <div>
-                <p className="title">{item.category}</p>
-                <p>{item.description}</p>
-              </div>
-            </IndicatorWrapper>
-          </TransactionDetails>
-          <div className="amount-wrapper">
-            {Icon}
-            <span>
-              {item.payment === "USD"
-                ? `${item.amount.toLocaleString()} USD`
-                : `${item.amount.toLocaleString()} UZS`}
-            </span>
-          </div>
-        </TransactionItem>
-      );
-    });
-
-  // Tranzaktsiyalarni guruhlash
-  const groupedTransactions = transactions?.reduce((acc, transaction) => {
+  const groupedTransactions = transactions.reduce((acc, transaction) => {
     const date = transaction.date;
-    if (!acc[date]) {
-      acc[date] = [];
-    }
+    if (!acc[date]) acc[date] = [];
     acc[date].push(transaction);
     return acc;
   }, {});
 
-  // Sanalarni kamayish tartibida tartiblash
   const sortedDates = Object.keys(groupedTransactions).sort(
     (a, b) => new Date(b) - new Date(a)
   );
 
+  const handleTransactionClick = (transaction) => {
+    setSelectedTransaction(transaction);
+    setModalVisible(true);
+  };
+
   return (
-    <>
-      <BalanceCardWrapper>
-        <BalanceCard naqd={200000} karta={500000} dollar={1900000} />
-      </BalanceCardWrapper>
+    <ListWrapper>
+      {isLoading ? (
+        <p>Yuklanmoqda...</p>
+      ) : transactions.length ? (
+        <Collapse
+          expandIconPosition="right"
+          expandIcon={({ isActive }) => (
+            <CustomCollapseIcon>
+              {isActive ? <UpOutlined /> : <DownOutlined />}
+            </CustomCollapseIcon>
+          )}
+        >
+          {sortedDates.map((date) => (
+            <Panel
+              key={date}
+              header={
+                <DateSummary>
+                  <span>{moment(date).format("DD-MMMM YYYY")}</span>
+                  <span>
+                    Balans:
+                    {groupedTransactions[date].reduce((total, item) => {
+                      const amount =
+                        item.payment === "USD"
+                          ? item.amount * 12000
+                          : item.amount;
+                      return item.type === "income"
+                        ? total + amount
+                        : total - amount;
+                    }, 0)}
+                  </span>
+                </DateSummary>
+              }
+            >
+              {groupedTransactions[date].map((txn, index) => {
+                const Icon =
+                  txn.typeMoney === "karta" ? (
+                    <CreditCardOutlined className="icon" />
+                  ) : txn.payment === "USD" ? (
+                    <DollarCircleOutlined className="icon" />
+                  ) : (
+                    <WalletOutlined className="icon" />
+                  );
 
-      {transactions.length === 0 ? ( // Agar tranzaktsiyalar bo‘sh bo‘lsa
-        <NoDataWrapper>
-          <Empty description={false} />
-          <NoDataText>Hozircha malumotlar mavjud emas</NoDataText>
-        </NoDataWrapper>
+                return (
+                  <Tooltip
+                    key={index}
+                    title="Batafsil ko'rish uchun bosing"
+                    placement="top"
+                  >
+                    <TransactionItem
+                      type={txn.type}
+                      onClick={() => handleTransactionClick(txn)}
+                    >
+                      <IconWrapper type={txn.type}>
+                        {Icon}
+                        <div className="details">
+                          <span className="category">{txn.category}</span>
+                          <span className="description">{txn.description}</span>
+                        </div>
+                      </IconWrapper>
+                      <div className="amount-wrapper">
+                        <span>
+                          {txn.payment === "USD"
+                            ? `${txn.amount.toLocaleString()} USD`
+                            : `${txn.amount.toLocaleString()} UZS`}
+                        </span>
+                      </div>
+                    </TransactionItem>
+                  </Tooltip>
+                );
+              })}
+            </Panel>
+          ))}
+        </Collapse>
       ) : (
-        <ListWrapper>
-          <Collapse>
-            {sortedDates.map((date) => {
-              const dayTransactions = groupedTransactions[date];
-              const total = dayTransactions.reduce((sum, item) => {
-                const amount =
-                  item.payment === "USD"
-                    ? item.amount * 12000 // USD -> UZS konvertatsiyasi
-                    : item.amount;
-                return item.type === "income" ? sum + amount : sum - amount;
-              }, 0);
-
-              return (
-                <Panel
-                  key={date}
-                  header={
-                    <DateSummary>
-                      <span>{formatDate(date)}</span>
-                      <span
-                        style={{
-                          color: total >= 0 ? "#4caf50" : "#f44336",
-                        }}
-                      >
-                        UZS {total.toLocaleString()}
-                      </span>
-                    </DateSummary>
-                  }
-                >
-                  {renderTransactionItems(dayTransactions)}
-                </Panel>
-              );
-            })}
-          </Collapse>
-        </ListWrapper>
+        <NoDataWrapper>
+          <Empty description="Hozircha ma'lumot yo'q" />
+          <h3>Tranzaksiyalarni qo'shing</h3>
+        </NoDataWrapper>
       )}
-    </>
+
+      {/* Modal for transaction details */}
+      {selectedTransaction && (
+        <Modal
+          title="Tranzaksiya detali"
+          visible={isModalVisible}
+          footer={null}
+          onCancel={() => setModalVisible(false)}
+        >
+          <div>
+            <p>
+              <b>Kategoriya:</b> {selectedTransaction.category}
+            </p>
+            <p>
+              <b>Summasi:</b> {selectedTransaction.amount.toLocaleString()}{" "}
+              {selectedTransaction.payment}
+            </p>
+            <p>
+              <b>Tavsif:</b> {selectedTransaction.description}
+            </p>
+            <p>
+              <b>Sana:</b>{" "}
+              {moment(selectedTransaction.date).format("DD-MMMM YYYY")}
+            </p>
+          </div>
+          <Button
+            style={{
+              marginTop: "10px",
+              backgroundColor: "#4caf50",
+              color: "white",
+              width: "100%",
+            }}
+            onClick={() => setModalVisible(false)}
+          >
+            Yopish
+          </Button>
+        </Modal>
+      )}
+    </ListWrapper>
   );
 };
 

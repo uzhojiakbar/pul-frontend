@@ -36,8 +36,6 @@ const HomePageStyle = styled.div`
 `;
 
 const Router = ({ transactions }) => {
-  const [selectedPage, setSelectedPage] = useState("income"); // Default: Kirim
-
   return (
     <Routes>
       <Route

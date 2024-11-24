@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Radio, Button } from "antd";
 import styled from "styled-components";
-import { useTransactions } from "../../hook/useTransactions"; // Hook import qilindi
-import DateRangePicker from "../DateRangePicker/DateRangePicker"; // Moslashtirilgan DatePicker
+import { queryClient } from "../../utils/reactQueryClient.js"; // React Query Client
 
 const FilterWrapper = styled.div`
   display: flex;
@@ -11,7 +10,6 @@ const FilterWrapper = styled.div`
 `;
 
 const StyledModal = styled(Modal)`
-  min-width: 320px;
   .ant-modal-content {
     border-radius: 12px;
   }
@@ -32,7 +30,7 @@ const StyledModal = styled(Modal)`
 const StyledButton = styled(Button)`
   background-color: ${({ primary }) =>
     primary === "ok" ? "#4caf50" : primary === "cancel" ? "red" : "default"};
-  color: ${({ primary }) => (primary ? "white" : "default")};
+  color: white;
 
   &:hover {
     background-color: ${({ primary }) =>
@@ -53,34 +51,34 @@ const FilterModal = ({ isOpen, onClose }) => {
     endDate: null,
   });
 
-  const { data: transactions, isLoading } = useTransactions(filters);
-
   const handleFilterChange = (key, value) => {
     setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
   };
 
   const handleApply = () => {
-    // Filterlar qo'llanadi
+    queryClient.setQueryData("transactionFilters", filters); // Filter holatini global yangilash
     onClose();
   };
 
   const handleReset = () => {
-    setFilters({
+    const defaultFilters = {
       type: null,
       typeMoney: null,
       payment: null,
       startDate: null,
       endDate: null,
-    });
+    };
+    setFilters(defaultFilters);
+    queryClient.setQueryData("transactionFilters", defaultFilters);
   };
 
   return (
     <StyledModal
       title="Filterni tanlang"
-      visible={isOpen}
+      open={isOpen}
       onCancel={onClose}
       footer={[
-        <StyledButton key="reset" onClick={handleReset}>
+        <StyledButton key="reset" onClick={handleReset} primary="cancel">
           Tozalash
         </StyledButton>,
         <StyledButton key="apply" primary="ok" onClick={handleApply}>
@@ -89,7 +87,6 @@ const FilterModal = ({ isOpen, onClose }) => {
       ]}
     >
       <FilterWrapper>
-        {/* Kirim/Chiqim */}
         <div>
           <p>Kirim yoki Chiqim:</p>
           <Radio.Group
@@ -100,59 +97,8 @@ const FilterModal = ({ isOpen, onClose }) => {
             <Radio value="expense">Chiqim</Radio>
           </Radio.Group>
         </div>
-
-        {/* To'lov turi */}
-        <div>
-          <p>To'lov turi:</p>
-          <Radio.Group
-            onChange={(e) => handleFilterChange("typeMoney", e.target.value)}
-            value={filters.typeMoney}
-          >
-            <Radio value="naqt">Naqd</Radio>
-            <Radio value="karta">Karta</Radio>
-          </Radio.Group>
-        </div>
-
-        {/* Valyuta turi */}
-        <div>
-          <p>Valyuta turi:</p>
-          <Radio.Group
-            onChange={(e) => handleFilterChange("payment", e.target.value)}
-            value={filters.payment}
-          >
-            <Radio value="UZS">UZS</Radio>
-            <Radio value="USD">USD</Radio>
-          </Radio.Group>
-        </div>
-
-        {/* Sana oralig'i */}
-        <div>
-          <p>Sanani tanlang:</p>
-          <DateRangePicker
-            onDateChange={(range) =>
-              setFilters((prevFilters) => ({
-                ...prevFilters,
-                startDate: range ? range[0] : null,
-                endDate: range ? range[1] : null,
-              }))
-            }
-            startDate={filters.startDate}
-            endDate={filters.endDate}
-          />
-        </div>
+        {/* Qo'shimcha filtrlash */}
       </FilterWrapper>
-      {isLoading ? (
-        <p>Yuklanmoqda...</p>
-      ) : (
-        <div>
-          <h4>Filtrlangan tranzaktsiyalar:</h4>
-          {transactions?.map((txn) => (
-            <p key={txn._id}>
-              {txn.category}: {txn.amount} {txn.payment}
-            </p>
-          ))}
-        </div>
-      )}
     </StyledModal>
   );
 };
