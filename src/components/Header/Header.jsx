@@ -86,7 +86,7 @@ const Header = ({ setFilterModalOpen }) => {
         {/* Left Side */}
         <TitleWrapper to={"/"}>
           <Logo />
-          <Title>SOQQA</Title>
+          <Title>WEALTHY</Title>
         </TitleWrapper>
 
         {/* Right Side */}
