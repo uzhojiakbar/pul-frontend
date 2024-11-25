@@ -95,27 +95,27 @@ const SidebarMenu = styled(MenuOutlined)`
 
 const MainWrapper = styled.div`
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
 
   display: flex;
   flex-direction: column;
   gap: 20px;
 
-  position: sticky;
-  top: 0;
-  z-index: 999;
-
   padding: 16px 0;
 
   min-width: 320px;
-  max-width: 1920px;
   width: 100vw;
-
-  max-height: 8vh;
-
-  height: 10vh;
+  max-width: 1920px;
   margin: 0 auto;
+
+  .balance {
+    /* display: none; */
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
 `;
 
 const Header = ({ setFilterModalOpen }) => {
@@ -226,10 +226,6 @@ const Header = ({ setFilterModalOpen }) => {
           <SidebarMenu />
         </MobileDropdown>
       </HeaderWrapper>
-
-      <div className="balance">
-        <BalanceCard />
-      </div>
 
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={toggleDrawer}>

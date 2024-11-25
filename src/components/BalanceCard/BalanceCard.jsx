@@ -1,75 +1,115 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useInView } from "react-intersection-observer";
-import { motion } from "framer-motion";
 import {
-  WalletOutlined,
-  CreditCardOutlined,
-  DollarCircleOutlined,
-  MinusCircleFilled,
+  FilterOutlined,
+  MenuOutlined,
   MinusOutlined,
+  PlusOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { useBalance } from "../../hook/useBalance";
-import { Select } from "antd";
 import Loading from "../Loading/Loading";
-import NewExpense from "../../pages/NewExpense/NewIncome";
-import NewIncome from "../../pages/NewIncome/NewIncome";
-import Sidebar from "../Sidebar/Sidebar";
+import { Select } from "antd";
 
 const Card = styled.div`
-  margin: 0 16px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  max-height: 18vh; // Maximal balandlik
-  min-height: 100px;
-  height: fit-content;
   display: flex;
-  justify-content: space-between;
-  gap: 4px;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  transition: all 0.3s ease-in-out;
+  width: ${({ width }) => width || "100%"};
 
-  position: relative;
-`;
+  ${({ sticky }) =>
+    sticky &&
+    `
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-const TotalBalance = styled.div`
-  font-size: 24px;
-  font-weight: bold;
-  background: rgba(76, 175, 80, 0.7);
-  font-weight: 900;
-  padding: 16px;
-  border-radius: 8px;
-  color: white;
+    display:flex;
+    flex-direction:row;
+  `}
 
-  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.2);
-`;
+  @media (max-width: 768px) {
+    ${({ sticky }) =>
+      sticky &&
+      `
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-const MainMiddle = styled.div`
-  width: 70%;
-
-  @media (max-width: 1024px) {
-    width: 100%;
+    display:flex;
+    flex-direction:column;
+  `}
   }
 `;
 
-const SubBalances = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch; /* Elementlarni butun balandlikka cho'zish */
-  height: 60px;
-  margin-top: 8px;
+const ButtonsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 `;
 
-const SubBalanceItem = styled.div`
+const Button = styled.button`
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border-radius: 8px;
+  padding: ${({ sticky }) => (sticky ? "12px 4px" : "28px 8px")};
   display: flex;
-  flex-direction: column;
-  justify-content: center; /* O'rtaga joylash */
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #757575;
-  flex-grow: 1; /* Tugmalar bo'sh joyni qoplamasligi uchun o'rtadagi itemlar cho'ziladi */
+  justify-content: center;
+  gap: ${({ sticky }) => (sticky ? "4px" : "8px")};
+  font-size: ${({ sticky }) => (sticky ? "14px" : "16px")};
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  outline: none;
+  border: none;
+
+  &:hover {
+    background: rgba(76, 175, 80, 0.4);
+    color: white;
+  }
+
+  & svg {
+    font-size: ${({ sticky }) => (sticky ? "16px" : "20px")};
+    transition: font-size 0.3s ease;
+  }
+`;
+
+const BalanceSection = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: ${({ sticky }) => (sticky ? "0" : "16px")};
+
+  .mainCard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
 `;
 
 const BalanceTitle = styled.div`
@@ -77,10 +117,15 @@ const BalanceTitle = styled.div`
   color: #666;
 `;
 
-const Amount = styled.span`
-  font-size: 14px;
+const BalanceValue = styled.div`
+  font-size: ${({ sticky }) => (sticky ? "24px" : "32px")};
   font-weight: bold;
   color: #4caf50;
+  margin-top: 4px;
+  @media (max-width: 480px) {
+    font-size: 22px;
+  }
+  transition: font-size 0.3s ease;
 `;
 
 const RefreshButton = styled.button`
@@ -91,91 +136,102 @@ const RefreshButton = styled.button`
   padding: 4px 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1; /* Bo'sh joyni qoplash */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.8;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  @media (max-width: 1024px) {
-    display: none;
+    background: #4caf50;
+    color: white;
   }
 `;
 
-const BalanceCard = () => {
-  const { data: balance, isLoading } = useBalance();
+const BalanceCard = ({ width = "100%", setOpenPage, OpenPage }) => {
+  const { data: balance, isLoading, refetch } = useBalance();
+  const [isSticky, setIsSticky] = useState(false);
 
-  const [isSidebarOpenIncome, setSidebarOpenIncome] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const toggleDrawer = () => {
-    setSidebarOpenIncome(!isSidebarOpenIncome);
+  const [selectedCurrency, setSelectedCurrency] = useState("UZS");
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      setIsSticky(true);
+    } else {
+      setIsSticky(false);
+    }
   };
-  const [isSidebarOpenExpene, setSidebarOpenExpense] = useState(false);
-  const toggleDrawer2 = () => {
-    setSidebarOpenExpense(!isSidebarOpenExpene);
+
+  const changePage = (page) => {
+    if (page === OpenPage) {
+      setOpenPage("");
+    } else {
+      setOpenPage(page);
+    }
   };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const displayedBalance =
+    selectedCurrency === "USD"
+      ? `${balance?.all?.usd?.toLocaleString()}`
+      : `${balance?.all?.uzs?.toLocaleString()}`;
 
   return (
-    <Card>
-      {loading && <Loading />}
-      <Button onClick={toggleDrawer2} color="#f44336">
-        <MinusOutlined />
-      </Button>{" "}
-      <MainMiddle>
-        <TotalBalance>Umumiy hisob: UZS {balance?.all?.uzs}</TotalBalance>
-        <SubBalances>
-          <SubBalanceItem>
-            <WalletOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
-            <Amount>{balance?.uzs.toLocaleString()} UZS </Amount>
-          </SubBalanceItem>
-          <Divider />
-          <SubBalanceItem>
-            <DollarCircleOutlined
-              style={{ fontSize: "16px", color: "#4caf50" }}
-            />
-            <Amount> {balance?.usd.toLocaleString()} USD</Amount>
-          </SubBalanceItem>
-        </SubBalances>
-      </MainMiddle>
-      <Button onClick={toggleDrawer} color="#4caf50">
-        +
-      </Button>
-      <Sidebar
-        title="Income qo'shsh"
-        isOpen={isSidebarOpenIncome}
-        onClose={toggleDrawer}
-      >
-        <NewIncome
-          loading={loading}
-          setLoading={setLoading}
-          close={toggleDrawer}
-        />
-      </Sidebar>
-      <Sidebar
-        direction="left"
-        title="Expense qo'shsh"
-        isOpen={isSidebarOpenExpene}
-        onClose={toggleDrawer2}
-      >
-        <NewExpense
-          loading={loading}
-          setLoading={setLoading}
-          close={toggleDrawer2}
-        />
-      </Sidebar>
+    <Card width={width} sticky={isSticky}>
+      {isLoading && <Loading />}
+      <BalanceSection sticky={isSticky}>
+        <BalanceTitle sticky={isSticky}>Umumiy hisobingiz</BalanceTitle>
+        <div className="mainCard">
+          <RefreshButton sticky={isSticky} onClick={refetch}>
+            <ReloadOutlined />
+          </RefreshButton>
+          <BalanceValue sticky={isSticky}>
+            {displayedBalance || "0,00"}
+          </BalanceValue>
+          <Select
+            value={selectedCurrency}
+            onChange={(value) => setSelectedCurrency(value)}
+          >
+            <Option value="UZS">UZS</Option>
+            <Option value="USD">USD</Option>
+          </Select>
+        </div>
+      </BalanceSection>
+      <ButtonsContainer sticky={isSticky}>
+        <Button
+          sticky={isSticky}
+          onClick={() => changePage("income")}
+          color="#4caf50"
+        >
+          <PlusOutlined />
+          Income
+        </Button>
+        <Button
+          sticky={isSticky}
+          onClick={() => changePage("expense")}
+          color="#f44336"
+        >
+          <MinusOutlined />
+          Expense
+        </Button>
+        <Button
+          sticky={isSticky}
+          onClick={() => changePage("filter")}
+          color="#4caf50"
+        >
+          <FilterOutlined />
+          Filter
+        </Button>
+        <Button
+          sticky={isSticky}
+          onClick={() => changePage("category")}
+          color="#4caf50"
+        >
+          <MenuOutlined />
+          Kategoriya
+        </Button>
+      </ButtonsContainer>
     </Card>
   );
 };

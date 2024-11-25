@@ -23,10 +23,6 @@ const ListWrapper = styled.div`
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
-
-  min-width: 320px;
-  width: 100vw;
-  max-width: 1920px;
 `;
 
 // Transaction item container with glassmorphism
