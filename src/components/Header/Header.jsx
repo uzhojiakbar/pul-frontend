@@ -10,7 +10,6 @@ import {
 import { Dropdown, Menu } from "antd";
 import Sidebar from "../Sidebar/Sidebar.jsx"; // Sidebar Component
 import { NavLink } from "react-router-dom";
-import BalanceCard from "../BalanceCard/BalanceCard";
 import CategoryPage from "../../pages/Category/CategoryPage.jsx";
 import { logoutUser } from "../../utils/auth.js";
 
@@ -102,10 +101,6 @@ const MainWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-
-  position: sticky;
-  top: 0;
-  z-index: 999;
 
   padding: 16px 0;
 
@@ -231,10 +226,6 @@ const Header = ({ setFilterModalOpen }) => {
           <SidebarMenu />
         </MobileDropdown>
       </HeaderWrapper>
-
-      <div className="balance">
-        <BalanceCard />
-      </div>
 
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={toggleDrawer}>

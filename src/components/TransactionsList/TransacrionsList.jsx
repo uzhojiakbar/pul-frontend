@@ -24,10 +24,19 @@ const ListWrapper = styled.div`
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
+  width: ${({ width }) => width || "100%"};
+  transition: all 0.3s ease;
 
-  min-width: 320px;
-  width: 100vw;
-  max-width: 1920px;
+  @media (max-width: 768px) {
+    padding: 12px;
+    box-shadow: none;
+    margin: 8px 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+    margin: 4px 0;
+  }
 `;
 
 // Transaction item container with glassmorphism
@@ -61,11 +70,19 @@ const TransactionItem = styled.div`
     font-size: 16px;
     font-weight: bold;
     color: ${({ type }) => (type === "income" ? "#4caf50" : "#e57373")};
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
   }
 
   span {
     font-size: 14px;
     font-weight: 500;
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -78,22 +95,34 @@ const IconWrapper = styled.div`
   .icon {
     font-size: 24px;
     color: ${({ type }) => (type === "income" ? "#4caf50" : "#e57373")};
+
+    @media (max-width: 480px) {
+      font-size: 20px;
+    }
   }
 
   .details {
     display: flex;
     flex-direction: column;
     gap: 4px;
-  }
 
-  .category {
-    font-weight: bold;
-    text-transform: capitalize;
-  }
+    .category {
+      font-weight: bold;
+      text-transform: capitalize;
 
-  .description {
-    font-size: 12px;
-    color: #757575;
+      @media (max-width: 480px) {
+        font-size: 14px;
+      }
+    }
+
+    .description {
+      font-size: 12px;
+      color: #757575;
+
+      @media (max-width: 480px) {
+        font-size: 10px;
+      }
+    }
   }
 `;
 
@@ -107,6 +136,14 @@ const DateSummary = styled.div`
   backdrop-filter: blur(8px);
   padding: 8px 16px;
   border-radius: 8px;
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 const NoDataWrapper = styled.div`
@@ -116,6 +153,15 @@ const NoDataWrapper = styled.div`
 
   h3 {
     margin-top: 16px;
+
+    @media (max-width: 768px) {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -129,9 +175,17 @@ const CustomCollapseIcon = styled.div`
   .ant-collapse-arrow {
     display: none;
   }
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
-const TransactionsList = () => {
+const TransactionsList = ({ width = "100%" }) => {
   const filters = {}; // Filtirlar uchun shablon
   const { data: transactions = [], isLoading } = useTransactions(filters);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -154,7 +208,7 @@ const TransactionsList = () => {
   };
 
   return (
-    <ListWrapper>
+    <ListWrapper width={width}>
       {isLoading ? (
         <Loading />
       ) : transactions.length ? (
