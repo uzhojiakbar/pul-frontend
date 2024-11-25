@@ -111,6 +111,7 @@ const MainWrapper = styled.div`
 
   min-width: 320px;
   width: 100vw;
+  max-width: 1920px;
   margin: 0 auto;
 
   .balance {

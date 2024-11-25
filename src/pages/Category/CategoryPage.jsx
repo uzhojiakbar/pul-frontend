@@ -35,13 +35,18 @@ const StyledButton = styled(Button)`
   border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
-  padding: 12px 24px;
+
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 
+  padding: 30px;
+  border: 2px solid transparent !important;
+
   &:hover {
-    background: linear-gradient(90deg, #4caf50, #43a047);
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    background: white !important;
+    border: 2px solid #4caf50 !important;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2) !important;
+    color: #4caf50 !important;
   }
 `;
 

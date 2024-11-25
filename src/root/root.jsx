@@ -8,10 +8,16 @@ import Header from "../components/Header/Header";
 import FilterModal from "../components/FilterModal/FilterModal";
 import { useTransactions } from "../hook/useTransactions";
 import Loading from "../components/Loading/Loading";
+import styled from "styled-components";
 
 const Root = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const MainNWrapper = styled.div`
+    max-width: 1920px;
+    margin: 0 auto;
+  `;
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -47,7 +53,7 @@ const Root = () => {
   }
 
   return isAuthenticated ? (
-    <div className="main">
+    <MainNWrapper className="main">
       {transactionsLoading && <Loading />}
       <GlobalStyle />
       <Header setFilterModalOpen={setFilterModalOpen} />
@@ -59,12 +65,12 @@ const Root = () => {
       />
 
       <Router transactions={transactions} />
-    </div>
+    </MainNWrapper>
   ) : (
-    <div>
+    <MainNWrapper className="main">
       <GlobalStyle />
       <Router />
-    </div>
+    </MainNWrapper>
   );
 };
 

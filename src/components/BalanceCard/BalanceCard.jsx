@@ -20,12 +20,14 @@ const Card = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-height: 15vh; // Maximal balandlik
+  max-height: 18vh; // Maximal balandlik
   min-height: 100px;
   height: fit-content;
   display: flex;
   justify-content: space-between;
   gap: 4px;
+
+  position: relative;
 `;
 
 const TotalBalance = styled.div`

@@ -22,6 +22,8 @@ const DrawerMain = styled(Drawer)`
   .ant-drawer-content-wrapper {
     min-width: 320px !important;
     width: 100vw !important; /* Mobil uchun kenglik */
+    max-width: 1920px;
+
     @media (min-width: 1024px) {
       width: 70vw !important; /* Kompyuter uchun kenglik */
     }

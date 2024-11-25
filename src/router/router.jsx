@@ -10,7 +10,6 @@ import Register from "../pages/Register/Register";
 
 const HomePageStyle = styled.div`
   display: flex;
-  padding: 10px;
 
   .incomepage {
     display: none; /* Defaultda yashiringan */

@@ -16,7 +16,7 @@ const { Panel } = Collapse;
 
 // Wrapper for the entire list with glassmorphism
 const ListWrapper = styled.div`
-  margin: 16px;
+  margin: 16px 0;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   height: fit-content;
@@ -27,7 +27,7 @@ const ListWrapper = styled.div`
 
   min-width: 320px;
   width: 100vw;
-  margin: 0 auto;
+  max-width: 1920px;
 `;
 
 // Transaction item container with glassmorphism
@@ -154,134 +154,130 @@ const TransactionsList = () => {
   };
 
   return (
-    <>
-      <ListWrapper>
-        {isLoading ? (
-          <Loading />
-        ) : transactions.length ? (
-          <Collapse
-            expandIconPosition="right"
-            expandIcon={({ isActive }) => (
-              <CustomCollapseIcon>
-                {isActive ? <UpOutlined /> : <DownOutlined />}
-              </CustomCollapseIcon>
-            )}
-          >
-            {sortedDates.map((date) => (
-              <Panel
-                key={date}
-                header={
-                  <DateSummary>
-                    <span>{moment(date).format("DD-MMMM YYYY")}</span>
-                    <span>
-                      Balans:
-                      {groupedTransactions[date].reduce((total, item) => {
-                        const amount =
-                          item.payment === "USD"
-                            ? item.amount * 12000
-                            : item.amount;
-                        return item.type === "income"
-                          ? total + amount
-                          : total - amount;
-                      }, 0)}
-                    </span>
-                  </DateSummary>
-                }
-              >
-                {groupedTransactions[date].map((txn, index) => {
-                  const Icon =
-                    txn.typeMoney === "karta" ? (
-                      <CreditCardOutlined className="icon" />
-                    ) : txn.payment === "USD" ? (
-                      <DollarCircleOutlined className="icon" />
-                    ) : (
-                      <WalletOutlined className="icon" />
-                    );
-
-                  return (
-                    <Tooltip
-                      key={index}
-                      title="Batafsil ko'rish uchun bosing"
-                      placement="top"
-                    >
-                      <TransactionItem
-                        type={txn.type}
-                        onClick={() => handleTransactionClick(txn)}
-                      >
-                        <IconWrapper type={txn.type}>
-                          {Icon}
-                          <div className="details">
-                            <span className="category">{txn.category}</span>
-                            <span className="description">
-                              {txn.description}
-                            </span>
-                          </div>
-                        </IconWrapper>
-                        <div className="amount-wrapper">
-                          <span>
-                            {txn.payment === "USD"
-                              ? `${txn.amount.toLocaleString()} USD`
-                              : `${txn.amount.toLocaleString()} UZS`}
-                          </span>
-                        </div>
-                      </TransactionItem>
-                    </Tooltip>
-                  );
-                })}
-              </Panel>
-            ))}
-          </Collapse>
-        ) : (
-          <NoDataWrapper>
-            <Empty description="Hozircha ma'lumot yo'q" />
-            <h3>Tranzaksiyalarni qo'shing</h3>
-          </NoDataWrapper>
-        )}
-
-        {/* Modal for transaction details */}
-        {selectedTransaction && (
-          <Modal
-            title="Tranzaksiya detali"
-            visible={isModalVisible}
-            footer={null}
-            onCancel={() => setModalVisible(false)}
-            bodyStyle={{
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(10px)",
-              borderRadius: "12px",
-            }}
-          >
-            <div>
-              <p>
-                <b>Kategoriya:</b> {selectedTransaction.category}
-              </p>
-              <p>
-                <b>Summasi:</b> {selectedTransaction.amount.toLocaleString()}{" "}
-                {selectedTransaction.payment}
-              </p>
-              <p>
-                <b>Tavsif:</b> {selectedTransaction.description}
-              </p>
-              <p>
-                <b>Sana:</b>{" "}
-                {moment(selectedTransaction.date).format("DD-MMMM YYYY")}
-              </p>
-            </div>
-            <Button
-              style={{
-                marginTop: "10px",
-                backgroundColor: "#4caf50",
-                color: "white",
-                width: "100%",
-              }}
-              onClick={() => setModalVisible(false)}
+    <ListWrapper>
+      {isLoading ? (
+        <Loading />
+      ) : transactions.length ? (
+        <Collapse
+          expandIconPosition="right"
+          expandIcon={({ isActive }) => (
+            <CustomCollapseIcon>
+              {isActive ? <UpOutlined /> : <DownOutlined />}
+            </CustomCollapseIcon>
+          )}
+        >
+          {sortedDates.map((date) => (
+            <Panel
+              key={date}
+              header={
+                <DateSummary>
+                  <span>{moment(date).format("DD-MMMM YYYY")}</span>
+                  <span>
+                    Balans:
+                    {groupedTransactions[date].reduce((total, item) => {
+                      const amount =
+                        item.payment === "USD"
+                          ? item.amount * 12000
+                          : item.amount;
+                      return item.type === "income"
+                        ? total + amount
+                        : total - amount;
+                    }, 0)}
+                  </span>
+                </DateSummary>
+              }
             >
-              Yopish
-            </Button>
-          </Modal>
-        )}
-      </ListWrapper>
-    </>
+              {groupedTransactions[date].map((txn, index) => {
+                const Icon =
+                  txn.typeMoney === "karta" ? (
+                    <CreditCardOutlined className="icon" />
+                  ) : txn.payment === "USD" ? (
+                    <DollarCircleOutlined className="icon" />
+                  ) : (
+                    <WalletOutlined className="icon" />
+                  );
+
+                return (
+                  <Tooltip
+                    key={index}
+                    title="Batafsil ko'rish uchun bosing"
+                    placement="top"
+                  >
+                    <TransactionItem
+                      type={txn.type}
+                      onClick={() => handleTransactionClick(txn)}
+                    >
+                      <IconWrapper type={txn.type}>
+                        {Icon}
+                        <div className="details">
+                          <span className="category">{txn.category}</span>
+                          <span className="description">{txn.description}</span>
+                        </div>
+                      </IconWrapper>
+                      <div className="amount-wrapper">
+                        <span>
+                          {txn.payment === "USD"
+                            ? `${txn.amount.toLocaleString()} USD`
+                            : `${txn.amount.toLocaleString()} UZS`}
+                        </span>
+                      </div>
+                    </TransactionItem>
+                  </Tooltip>
+                );
+              })}
+            </Panel>
+          ))}
+        </Collapse>
+      ) : (
+        <NoDataWrapper>
+          <Empty description="Hozircha ma'lumot yo'q" />
+          <h3>Tranzaksiyalarni qo'shing</h3>
+        </NoDataWrapper>
+      )}
+
+      {/* Modal for transaction details */}
+      {selectedTransaction && (
+        <Modal
+          title="Tranzaksiya detali"
+          visible={isModalVisible}
+          footer={null}
+          onCancel={() => setModalVisible(false)}
+          bodyStyle={{
+            background: "rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "12px",
+          }}
+        >
+          <div>
+            <p>
+              <b>Kategoriya:</b> {selectedTransaction.category}
+            </p>
+            <p>
+              <b>Summasi:</b> {selectedTransaction.amount.toLocaleString()}{" "}
+              {selectedTransaction.payment}
+            </p>
+            <p>
+              <b>Tavsif:</b> {selectedTransaction.description}
+            </p>
+            <p>
+              <b>Sana:</b>{" "}
+              {moment(selectedTransaction.date).format("DD-MMMM YYYY")}
+            </p>
+          </div>
+          <Button
+            style={{
+              marginTop: "10px",
+              backgroundColor: "#4caf50",
+              color: "white",
+              width: "100%",
+            }}
+            onClick={() => setModalVisible(false)}
+          >
+            Yopish
+          </Button>
+        </Modal>
+      )}
+    </ListWrapper>
   );
 };
 
