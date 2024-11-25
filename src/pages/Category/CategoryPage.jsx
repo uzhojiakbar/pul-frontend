@@ -145,6 +145,9 @@ const StyledListItem = styled.div`
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+
+    .del {
+    }
   }
 `;
 
@@ -155,22 +158,21 @@ const StyledListItemContent = styled.div`
 `;
 
 const StyledText = styled.span`
-  color: rgba(0, 0, 0, 0.8);
+  color: white;
   font-weight: 600;
   text-transform: capitalize;
   font-size: 16px;
 `;
 
 const StyledDeleteButton = styled(Button)`
-  background-color: rgba(244, 67, 54, 0.1);
-  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.6);
+  color: white;
   border: none;
   border-radius: 8px;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: rgba(244, 67, 54, 0.2);
-    color: #d32f2f;
+    color: #d32f2f !important;
   }
 `;
 
@@ -302,7 +304,10 @@ const CategoryPage = () => {
               <Emoji unified={item.emoji || "1f600"} size={24} />
               <StyledText>{item.name}</StyledText>
             </StyledListItemContent>
-            <StyledDeleteButton onClick={() => deleteCategory.mutate(item._id)}>
+            <StyledDeleteButton
+              className="del"
+              onClick={() => deleteCategory.mutate(item._id)}
+            >
               <DeleteOutlined />
             </StyledDeleteButton>
           </StyledListItem>

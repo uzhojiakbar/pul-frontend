@@ -16,7 +16,6 @@ const { Panel } = Collapse;
 
 // Wrapper for the entire list with glassmorphism
 const ListWrapper = styled.div`
-  margin: 16px 0;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   height: fit-content;
@@ -24,10 +23,7 @@ const ListWrapper = styled.div`
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
-
-  min-width: 320px;
-  width: 100vw;
-  max-width: 1920px;
+  margin: 20px;
 `;
 
 // Transaction item container with glassmorphism

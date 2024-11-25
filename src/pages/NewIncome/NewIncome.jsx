@@ -12,8 +12,6 @@ import CategoryPage from "../Category/CategoryPage";
 import Sidebar from "../../components/Sidebar/Sidebar";
 
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -259,3 +257,11 @@ const NewIncome = ({ close = () => {}, loading, setLoading }) => {
 };
 
 export default NewIncome;
+
+// Raqamlar Filter (1 000 000,Inputgaham)
+// Cateogry: TExt rangii ozgartirish (oq)
+// Error berganda text pastida qizarsin
+// Pullar birlashin (UZS, USD),
+// Dollar kursi Front-End dan ozgaririladi
+// Filter va transactuinlarni boglash
+// Balance switcher bilan togrlash

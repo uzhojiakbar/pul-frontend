@@ -10,7 +10,6 @@ import {
 import { Dropdown, Menu } from "antd";
 import Sidebar from "../Sidebar/Sidebar.jsx"; // Sidebar Component
 import { NavLink } from "react-router-dom";
-import BalanceCard from "../BalanceCard/BalanceCard";
 import CategoryPage from "../../pages/Category/CategoryPage.jsx";
 import { logoutUser } from "../../utils/auth.js";
 
@@ -96,31 +95,21 @@ const SidebarMenu = styled(MenuOutlined)`
 
 const MainWrapper = styled.div`
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(2px);
 
   display: flex;
   flex-direction: column;
   gap: 20px;
 
-  position: sticky;
-  top: 0;
-  z-index: 999;
-
-  padding: 16px 0;
-
   min-width: 320px;
-  width: 100vw;
   max-width: 1920px;
+  width: 100vw;
+
+  max-height: 8vh;
+
+  height: 10vh;
   margin: 0 auto;
-
-  .balance {
-    /* display: none; */
-
-    @media (max-width: 768px) {
-      display: block;
-    }
-  }
 `;
 
 const Header = ({ setFilterModalOpen }) => {
@@ -232,11 +221,6 @@ const Header = ({ setFilterModalOpen }) => {
         </MobileDropdown>
       </HeaderWrapper>
 
-      <div className="balance">
-        <BalanceCard />
-      </div>
-
-      {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={toggleDrawer}>
         <CategoryPage />
       </Sidebar>
