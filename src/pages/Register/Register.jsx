@@ -159,8 +159,9 @@ const Register = () => {
               },
             ]}
           >
+            <LockOutlined />
             <Input.Password
-              prefix={<LockOutlined style={{ color: "#000000" }} />}
+              // prefix={}
               placeholder="Parol"
               size="large"
               style={{ paddingLeft: "40px" }}
@@ -170,8 +171,9 @@ const Register = () => {
             name="confirmPassword"
             rules={[{ required: true, message: "Parolni qayta kiriting!" }]}
           >
+            <LockOutlined />
             <Input.Password
-              prefix={<LockOutlined />}
+              // prefix={}
               placeholder="Parolni tasdiqlang"
               size="large"
               style={{ paddingLeft: "40px" }}
