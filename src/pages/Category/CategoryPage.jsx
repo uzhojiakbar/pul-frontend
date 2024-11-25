@@ -42,6 +42,8 @@ const StyledButton = styled(Button)`
   padding: 30px;
   border: 2px solid transparent !important;
 
+  width: 100%;
+
   &:hover {
     background: white !important;
     border: 2px solid #4caf50 !important;
@@ -58,11 +60,8 @@ const StyledModal = styled(Modal)`
   }
 
   .ant-modal-header {
-    background: linear-gradient(
-      45deg,
-      #43a047,
-      #4caf50
-    ); /* Modaldagi header rang */
+    background-color: transparent;
+
     color: white;
     text-align: center;
     font-size: 20px;
@@ -232,14 +231,16 @@ const CategoryPage = () => {
     <PageWrapper>
       {isLoading && <Loading />}
       <StyledButton onClick={() => setIsModalOpen(true)}>
-        <PlusOutlined /> Add Category
+        <PlusOutlined /> Kategoriya qo'shish
       </StyledButton>
 
       <StyledModal
-        title="Add Category"
+        title="Kategoriya qoshish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        footer={<StyledButton onClick={handleAddCategory}>Add</StyledButton>}
+        footer={
+          <StyledButton onClick={handleAddCategory}>Qo'shish</StyledButton>
+        }
       >
         <CardInput>
           <label>Category Name</label>

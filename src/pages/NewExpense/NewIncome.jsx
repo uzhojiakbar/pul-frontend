@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useAddTransaction } from "../../hook/useTransactions";
 import { useCategories } from "../../hook/useCategorires";
 import Loading from "../../components/Loading/Loading";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { Emoji } from "emoji-picker-react";
+import CategoryPage from "../Category/CategoryPage";
+import Sidebar from "../../components/Sidebar/Sidebar";
 
 const Wrapper = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -17,53 +22,106 @@ const Wrapper = styled.div`
 const Label = styled.label`
   font-size: 16px;
   font-weight: bold;
+  color: #333333;
+`;
+
+const Input = styled.input`
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+  color: #333333;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: #f44336;
+    background: #fce4ec;
+  }
+
+  &::placeholder {
+    color: #888888;
+  }
 `;
 
 const SelectionWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 `;
 
 const OptionButton = styled.button`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 12px;
+  background: #f9f9f9;
   font-size: 14px;
+  font-weight: bold;
+  color: #333333;
   cursor: pointer;
-  flex: 1 1 calc(33.333% - 10px);
-  text-align: center;
+  transition: all 0.3s ease;
+
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background-color: #ffe5e5;
+    background: #fdecea;
+    border-color: #f44336;
+    color: #f44336;
   }
 
   &.active {
-    background-color: #f44336;
+    background: #f44336;
     color: white;
-    border: none;
+    border-color: #f44336;
+  }
+`;
+
+const AddCategoryButton = styled(OptionButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  .icon {
+    font-size: 16px;
+    color: #333333;
   }
 `;
 
 const ActionButton = styled(Button)`
   background-color: #f44336;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 
   &:hover {
     background-color: #d32f2f !important;
+  }
+
+  &:active {
+    background-color: #c62828 !important;
   }
 `;
 
 const NewExpense = ({ close = () => {}, loading, setLoading }) => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [typeMoney, setTypeMoney] = useState(""); // "naqt" yoki "karta"
-  const [payment, setPayment] = useState(""); // "UZS" yoki "USD"
+  const [typeMoney, setTypeMoney] = useState("");
+  const [payment, setPayment] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { mutate: addTransaction } = useAddTransaction();
   const { data: categories = [], isLoading: isCategoriesLoading } =
-    useCategories("expense"); // Expense kategoriyalarini olish
+    useCategories("expense");
   const navigate = useNavigate();
 
   const handleSubmit = () => {
@@ -86,13 +144,13 @@ const NewExpense = ({ close = () => {}, loading, setLoading }) => {
 
     addTransaction(
       {
-        date: moment().format("YYYY-MM-DD"),
+        date: moment().format("YYYY-MM-DD HH:mm"),
         category: selectedCategory.name,
         amount: parseFloat(amount),
         description,
-        type: "expense", // Expense turi
-        typeMoney, // "naqt" yoki "karta"
-        payment, // "UZS" yoki "USD"
+        type: "expense",
+        typeMoney,
+        payment,
       },
       {
         onSuccess: () => {
@@ -102,7 +160,7 @@ const NewExpense = ({ close = () => {}, loading, setLoading }) => {
           setTypeMoney("");
           setPayment("");
           setLoading(false);
-          navigate("/"); // Asosiy sahifaga qaytish
+          navigate("/");
         },
         onError: () => {
           message.error("Tranzaksiyani qo'shishda xatolik yuz berdi.");
@@ -114,32 +172,26 @@ const NewExpense = ({ close = () => {}, loading, setLoading }) => {
     close();
   };
 
+  const toggleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <Wrapper>
       {loading && <Loading />}
       <Label>Summa:</Label>
-      <input
+      <Input
         type="number"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         placeholder="Miqdor kiriting"
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ddd",
-        }}
       />
       <Label>Izoh:</Label>
-      <input
+      <Input
         type="text"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Malumot kiriting"
-        style={{
-          padding: "10px",
-          borderRadius: "8px",
-          border: "1px solid #ddd",
-        }}
+        placeholder="Ma'lumot kiriting"
       />
 
       <Label>To'lov turi:</Label>
@@ -179,15 +231,28 @@ const NewExpense = ({ close = () => {}, loading, setLoading }) => {
               onClick={() => setSelectedCategoryId(cat._id)}
               className={selectedCategoryId === cat._id ? "active" : ""}
             >
+              <Emoji unified={cat.emoji || "1f600"} size={24} />
               {cat.name}
             </OptionButton>
           ))}
+          <AddCategoryButton onClick={() => setIsModalOpen(true)}>
+            <PlusOutlined className="icon" /> qo'shish
+          </AddCategoryButton>
         </SelectionWrapper>
       )}
 
       <ActionButton type="primary" onClick={handleSubmit} disabled={loading}>
         Qo'shish
       </ActionButton>
+
+      <Sidebar
+        title="Kategoriya qo'shish"
+        isOpen={isModalOpen}
+        direction="left"
+        onClose={toggleCancel}
+      >
+        <CategoryPage />
+      </Sidebar>
     </Wrapper>
   );
 };
