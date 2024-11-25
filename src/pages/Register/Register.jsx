@@ -4,17 +4,14 @@ import { Form, Input, Button, message } from "antd";
 import { useRegisterUser } from "../../hook/useAuth.js";
 import { useNavigate } from "react-router-dom";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const RegisterWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(
-    135deg,
-    #c5e1a5,
-    #a5d6a7
-  ); /* To'qroq yashil ohang */
+  background: linear-gradient(135deg, #c5e1a5, #a5d6a7);
 `;
 
 const RegisterCard = styled.div`
@@ -30,7 +27,7 @@ const Title = styled.h1`
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 24px;
-  color: #388e3c; /* Yashil ohang */
+  color: #388e3c;
   font-family: "Poppins", sans-serif;
 `;
 
@@ -55,12 +52,12 @@ const StyledFormItem = styled(Form.Item)`
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
-    color: #000000; /* Qora rang */
+    color: #000000;
   }
 `;
 
 const StyledButton = styled(Button)`
-  background-color: #388e3c !important; /* Yashil rang */
+  background-color: #388e3c !important;
   color: #ffffff !important;
   border: none !important;
   height: 48px;
@@ -103,6 +100,11 @@ const Register = () => {
 
     if (password !== confirmPassword) {
       message.error("Parollar mos emas!");
+      return;
+    }
+
+    if (!username || !password || !confirmPassword) {
+      message.error("Barcha maydonlarni to'ldirish kerak!");
       return;
     }
 
@@ -159,9 +161,7 @@ const Register = () => {
               },
             ]}
           >
-            <LockOutlined />
             <Input.Password
-              // prefix={}
               placeholder="Parol"
               size="large"
               style={{ paddingLeft: "40px" }}
@@ -171,9 +171,7 @@ const Register = () => {
             name="confirmPassword"
             rules={[{ required: true, message: "Parolni qayta kiriting!" }]}
           >
-            <LockOutlined />
             <Input.Password
-              // prefix={}
               placeholder="Parolni tasdiqlang"
               size="large"
               style={{ paddingLeft: "40px" }}
@@ -191,7 +189,7 @@ const Register = () => {
           </Form.Item>
         </Form>
         <AlreadyHaveAccount>
-          <a href="/login">Allaqachon hisobingiz bormi? Kirish</a>
+          <Link to="/login">Allaqachon hisobingiz bormi? Kirish</Link>
         </AlreadyHaveAccount>
       </RegisterCard>
     </RegisterWrapper>

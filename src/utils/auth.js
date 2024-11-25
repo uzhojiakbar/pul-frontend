@@ -1,30 +1,35 @@
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
+// Avtorizatsiya holatini tekshirish
 export const isAuthenticated = () => {
   const token = Cookies.get("token");
-  return token && !isTokenExpired(token); // Token bor va amal qiladi
+  return token && !isTokenExpired(token); // Token mavjud va amal qilayotgan bo'lsa
 };
 
+// Tokenning muddati tugaganini tekshirish
 export const isTokenExpired = (token) => {
   try {
     const decoded = jwtDecode(token);
-    const currentTime = Date.now() / 1000; // Millisekundni sekundga o‘tkazish
+    const currentTime = Date.now() / 1000; // Millisekundni sekundga aylantirish
 
-    console.log("asd", (decoded.exp - currentTime) / 1000);
-    console.log(decoded.exp < currentTime);
-    return decoded.exp < currentTime; // Amal qilish tugaganmi?
+    if (!decoded.exp) return true; // Agar tokenda exp (muddati tugagan) mavjud bo'lmasa, xato bo'ladi
+
+    return decoded.exp < currentTime; // Agar exp qiymati hozirgi vaqtdan kichik bo'lsa, token tugagan
   } catch (error) {
-    return true; // Xato bo‘lsa, token amal qilmagan
+    return true; // Xatolik bo'lsa, tokenni amal qilmagan deb qabul qilamiz
   }
 };
 
+// Foydalanuvchini tizimga kirgizish
 export const loginUser = (token, id, username) => {
-  Cookies.set("token", token, { expires: 1 }); // 1 kunlik muddat
+  const expirationDate = new Date(Date.now() + 86400000); // 1 kunlik muddat
+  Cookies.set("token", token, { expires: expirationDate });
   Cookies.set("id", id);
   Cookies.set("username", username);
 };
 
+// Foydalanuvchini tizimdan chiqarish
 export const logoutUser = () => {
   Cookies.remove("token");
   Cookies.remove("id");

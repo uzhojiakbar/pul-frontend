@@ -11,6 +11,8 @@ import { useBalance } from "../../hook/useBalance";
 import Loading from "../Loading/Loading";
 import { Select } from "antd";
 
+const { Option } = Select;
+
 const Card = styled.div`
   display: flex;
   flex-direction: column;
@@ -33,9 +35,8 @@ const Card = styled.div`
     padding: 8px 16px;
     border-radius: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
   `}
 
   @media (max-width: 768px) {
@@ -49,9 +50,8 @@ const Card = styled.div`
     padding: 8px 16px;
     border-radius: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
   `}
   }
 `;
@@ -146,7 +146,6 @@ const RefreshButton = styled.button`
 const BalanceCard = ({ width = "100%", setOpenPage, OpenPage }) => {
   const { data: balance, isLoading, refetch } = useBalance();
   const [isSticky, setIsSticky] = useState(false);
-
   const [selectedCurrency, setSelectedCurrency] = useState("UZS");
 
   const handleScroll = () => {
@@ -174,8 +173,8 @@ const BalanceCard = ({ width = "100%", setOpenPage, OpenPage }) => {
 
   const displayedBalance =
     selectedCurrency === "USD"
-      ? `${balance?.all?.usd?.toLocaleString()}`
-      : `${balance?.all?.uzs?.toLocaleString()}`;
+      ? balance?.all?.usd?.toLocaleString() || "0,00"
+      : balance?.all?.uzs?.toLocaleString() || "0,00";
 
   return (
     <Card width={width} sticky={isSticky}>
@@ -186,9 +185,7 @@ const BalanceCard = ({ width = "100%", setOpenPage, OpenPage }) => {
           <RefreshButton sticky={isSticky} onClick={refetch}>
             <ReloadOutlined />
           </RefreshButton>
-          <BalanceValue sticky={isSticky}>
-            {displayedBalance || "0,00"}
-          </BalanceValue>
+          <BalanceValue sticky={isSticky}>{displayedBalance}</BalanceValue>
           <Select
             value={selectedCurrency}
             onChange={(value) => setSelectedCurrency(value)}
@@ -199,35 +196,19 @@ const BalanceCard = ({ width = "100%", setOpenPage, OpenPage }) => {
         </div>
       </BalanceSection>
       <ButtonsContainer sticky={isSticky}>
-        <Button
-          sticky={isSticky}
-          onClick={() => changePage("income")}
-          color="#4caf50"
-        >
+        <Button sticky={isSticky} onClick={() => changePage("income")}>
           <PlusOutlined />
           Income
         </Button>
-        <Button
-          sticky={isSticky}
-          onClick={() => changePage("expense")}
-          color="#f44336"
-        >
+        <Button sticky={isSticky} onClick={() => changePage("expense")}>
           <MinusOutlined />
           Expense
         </Button>
-        <Button
-          sticky={isSticky}
-          onClick={() => changePage("filter")}
-          color="#4caf50"
-        >
+        <Button sticky={isSticky} onClick={() => changePage("filter")}>
           <FilterOutlined />
           Filter
         </Button>
-        <Button
-          sticky={isSticky}
-          onClick={() => changePage("category")}
-          color="#4caf50"
-        >
+        <Button sticky={isSticky} onClick={() => changePage("category")}>
           <MenuOutlined />
           Kategoriya
         </Button>

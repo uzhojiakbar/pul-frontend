@@ -12,7 +12,7 @@ import { Emoji } from "emoji-picker-react";
 
 const EmojiPicker = React.lazy(() =>
   import("emoji-picker-react").catch(() => ({
-    default: () => <div>Failed to load emoji picker</div>,
+    default: () => <div>Emoji tanlagichi yuklanishda xato yuz berdi</div>,
   }))
 );
 
@@ -35,13 +35,10 @@ const StyledButton = styled(Button)`
   border-radius: 12px;
   font-size: 16px;
   font-weight: bold;
-
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-
   padding: 30px;
   border: 2px solid transparent !important;
-
   width: 100%;
 
   &:hover {
@@ -55,13 +52,12 @@ const StyledButton = styled(Button)`
 const StyledModal = styled(Modal)`
   .ant-modal-content {
     border-radius: 24px;
-    background: #f4f5f7; /* Modaldagi yangi rang */
+    background: #f4f5f7;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 
   .ant-modal-header {
     background-color: transparent;
-
     color: white;
     text-align: center;
     font-size: 20px;
@@ -83,7 +79,7 @@ const StyledModal = styled(Modal)`
     justify-content: center;
     gap: 20px;
     padding: 16px;
-    background-color: #f4f5f7; /* Modaldagi footer rang */
+    background-color: #f4f5f7;
     border-top: none;
   }
 `;
@@ -102,7 +98,7 @@ const CardInput = styled.div`
 
   input,
   .ant-select-selector {
-    background-color: #ffffff; /* Sayt fon rangi */
+    background-color: #ffffff;
     border: 1px solid #43a047;
     border-radius: 8px;
     padding: 12px 16px;
@@ -215,6 +211,7 @@ const CategoryPage = () => {
           setNewCategory("");
           setNewCategoryType("income");
           setSelectedEmoji("😊");
+          setPickerOpen(false); // Emoji tanlagichni yopish
           setIsModalOpen(false);
         },
         onError: () => {
@@ -222,6 +219,15 @@ const CategoryPage = () => {
         },
       }
     );
+  };
+
+  const handleDeleteCategory = (categoryId) => {
+    Modal.confirm({
+      title: "Siz ushbu kategoriyani o‘chirishni istaysizmi?",
+      onOk: () => {
+        deleteCategory.mutate(categoryId);
+      },
+    });
   };
 
   const handleEmojiSelect = (emojiObject) => {
@@ -237,7 +243,7 @@ const CategoryPage = () => {
       </StyledButton>
 
       <StyledModal
-        title="Kategoriya qoshish"
+        title="Kategoriya qo'shish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={
@@ -245,21 +251,21 @@ const CategoryPage = () => {
         }
       >
         <CardInput>
-          <label>Category Name</label>
+          <label>Kategoriya nomi</label>
           <Input
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="e.g., Food"
+            placeholder="Masalan: Taom"
           />
         </CardInput>
         <CardInput>
-          <label>Category Type</label>
+          <label>Kategoriya turi</label>
           <Select
             value={newCategoryType}
             onChange={(value) => setNewCategoryType(value)}
             options={[
-              { value: "income", label: "Income" },
-              { value: "expense", label: "Expense" },
+              { value: "income", label: "Kirim" },
+              { value: "expense", label: "Chiqim" },
             ]}
           />
         </CardInput>
@@ -275,22 +281,16 @@ const CategoryPage = () => {
                 padding: "10px",
               }}
             >
-              Select Emoji:
+              Emoji tanlash:
               <span style={{ fontSize: "18px" }}>
-                <Emoji
-                  unified={selectedEmoji}
-                  size={24}
-                  emojiStyle="apple" // Emoji Apple uslubida ko‘rinadi
-                />
+                <Emoji unified={selectedEmoji} size={24} emojiStyle="apple" />
               </span>
             </Button>
 
             {isPickerOpen && (
-              <div className="emoji-picker">
-                <Suspense fallback={<Loading />}>
-                  <EmojiPicker onEmojiClick={handleEmojiSelect} />
-                </Suspense>
-              </div>
+              <Suspense fallback={<Loading />}>
+                <EmojiPicker onEmojiClick={handleEmojiSelect} />
+              </Suspense>
             )}
           </EmojiPickerContainer>
         </CardInput>
@@ -301,13 +301,10 @@ const CategoryPage = () => {
         renderItem={(item) => (
           <StyledListItem key={item._id} type={item.type}>
             <StyledListItemContent>
-              <Emoji unified={item.emoji || "1f600"} size={24} />
               <StyledText>{item.name}</StyledText>
+              <Emoji unified={item.emoji} size={24} emojiStyle="apple" />
             </StyledListItemContent>
-            <StyledDeleteButton
-              className="del"
-              onClick={() => deleteCategory.mutate(item._id)}
-            >
+            <StyledDeleteButton onClick={() => handleDeleteCategory(item._id)}>
               <DeleteOutlined />
             </StyledDeleteButton>
           </StyledListItem>

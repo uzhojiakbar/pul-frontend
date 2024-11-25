@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Button, message, Modal, Input as AntdInput } from "antd";
+import { Button, message, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useAddTransaction } from "../../hook/useTransactions";
 import { useCategories, useAddCategory } from "../../hook/useCategorires";
@@ -26,15 +26,16 @@ const Label = styled.label`
 const Input = styled.input`
   padding: 12px;
   border-radius: 8px;
-  border: 1px solid #cccccc;
+  border: 1px solid ${({ error }) => (error ? "#f44336" : "#cccccc")};
   color: #333333;
   font-size: 14px;
   outline: none;
   transition: all 0.3s ease;
+  background: ${({ error }) => (error ? "#ffebee" : "#fff")};
 
   &:focus {
-    border-color: #4caf50;
-    background: #f8f8f8;
+    border-color: ${({ error }) => (error ? "#f44336" : "#4caf50")};
+    background: ${({ error }) => (error ? "#ffebee" : "#f8f8f8")};
   }
 
   &::placeholder {
@@ -117,6 +118,7 @@ const NewIncome = ({ close = () => {}, loading, setLoading }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [error, setError] = useState(null);
 
   const { mutate: addTransaction } = useAddTransaction();
   const { mutate: addCategory } = useAddCategory();
@@ -126,10 +128,11 @@ const NewIncome = ({ close = () => {}, loading, setLoading }) => {
 
   const handleSubmit = () => {
     if (!amount || !selectedCategoryId || !typeMoney || !payment) {
-      message.error("Hamma maydonlarni to'ldiring!");
+      setError("Hamma maydonlarni to'ldiring!");
       return;
     }
 
+    setError(null);
     setLoading(true);
 
     const selectedCategory = categories.find(
@@ -176,16 +179,22 @@ const NewIncome = ({ close = () => {}, loading, setLoading }) => {
     setIsModalOpen(0);
   };
 
+  const formatAmount = (value) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <Wrapper>
       {loading && <Loading />}
       <Label>Summa:</Label>
       <Input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+        type="text"
+        value={formatAmount(amount)}
+        onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
         placeholder="Miqdor kiriting"
+        error={error}
       />
+      {error && <div style={{ color: "red", fontSize: "12px" }}>{error}</div>}
       <Label>Izoh:</Label>
       <Input
         type="text"
@@ -257,11 +266,3 @@ const NewIncome = ({ close = () => {}, loading, setLoading }) => {
 };
 
 export default NewIncome;
-
-// Raqamlar Filter (1 000 000,Inputgaham)
-// Cateogry: TExt rangii ozgartirish (oq)
-// Error berganda text pastida qizarsin
-// Pullar birlashin (UZS, USD),
-// Dollar kursi Front-End dan ozgaririladi
-// Filter va transactuinlarni boglash
-// Balance switcher bilan togrlash

@@ -42,7 +42,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const FilterModal = ({ isOpen, onClose }) => {
+const FilterModal = ({ isOpen, onClose, onApplyFilters }) => {
   const [filters, setFilters] = useState({
     type: null,
     typeMoney: null,
@@ -56,7 +56,7 @@ const FilterModal = ({ isOpen, onClose }) => {
   };
 
   const handleApply = () => {
-    queryClient.setQueryData("transactionFilters", filters); // Filter holatini global yangilash
+    onApplyFilters(filters); // Send filters to the parent component
     onClose();
   };
 
@@ -69,7 +69,7 @@ const FilterModal = ({ isOpen, onClose }) => {
       endDate: null,
     };
     setFilters(defaultFilters);
-    queryClient.setQueryData("transactionFilters", defaultFilters);
+    onApplyFilters(defaultFilters); // Reset filters in parent
   };
 
   return (
@@ -91,7 +91,7 @@ const FilterModal = ({ isOpen, onClose }) => {
           <p>Kirim yoki Chiqim:</p>
           <Radio.Group
             onChange={(e) => handleFilterChange("type", e.target.value)}
-            value={filters.type}
+            value={filters.type || null}
           >
             <Radio value="income">Kirim</Radio>
             <Radio value="expense">Chiqim</Radio>

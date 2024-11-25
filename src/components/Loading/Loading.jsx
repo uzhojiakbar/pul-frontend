@@ -22,8 +22,7 @@ const LoaderWrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 99999;
-
+  z-index: 9999; /* Orta z-index */
   background: rgba(255, 255, 255, 0.8); /* Oq yarim shaffof fon */
   backdrop-filter: blur(5px); /* Fonga blur qo'shish */
   animation: ${fadeIn} 0.3s ease-in-out;
@@ -32,6 +31,10 @@ const LoaderWrapper = styled.div`
   font-size: 16px;
   font-weight: bold;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 14px; /* Mobil qurilmalar uchun kichik font */
+  }
 `;
 
 const Loader = styled.div`
@@ -42,12 +45,21 @@ const Loader = styled.div`
   height: 50px;
   animation: ${spin} 0.8s linear infinite; /* Sekinroq aylanish */
   margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    width: 40px; /* Mobil qurilmalar uchun kichikloader */
+    height: 40px;
+  }
 `;
 
 const LoadingText = styled.p`
   margin-top: 8px;
   color: #4caf50;
   font-size: 18px;
+
+  @media (max-width: 768px) {
+    font-size: 16px; /* Mobil qurilmalar uchun kichik matn */
+  }
 `;
 
 const Loading = () => {

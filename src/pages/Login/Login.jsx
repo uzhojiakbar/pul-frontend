@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Form, Input, Button, message } from "antd";
-import { isTokenExpired, loginUser } from "../../utils/auth";
+import { isTokenExpired, loginUser, logoutUser } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import Cookies from "js-cookie";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
+
 const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(
-    135deg,
-    #c5e1a5,
-    #a5d6a7
-  ); /* To‘qroq yashil ohanglar */
+  background: linear-gradient(135deg, #c5e1a5, #a5d6a7);
 `;
 
 const LoginCard = styled.div`
@@ -31,7 +33,7 @@ const Title = styled.h1`
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 24px;
-  color: #388e3c; /* Yashil ohang */
+  color: #388e3c;
   font-family: "Poppins", sans-serif;
 `;
 
@@ -56,12 +58,12 @@ const StyledFormItem = styled(Form.Item)`
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
-    color: #000000; /* Oq rangni o‘rniga qora rang */
+    color: #000000;
   }
 `;
 
 const StyledButton = styled(Button)`
-  background-color: #388e3c !important; /* Yashil rang */
+  background-color: #388e3c !important;
   color: #ffffff !important;
   border: none !important;
   height: 48px;
@@ -100,15 +102,19 @@ const Login = () => {
 
   useEffect(() => {
     const token = Cookies.get("token");
-    if (token && isTokenExpired(token)) {
+    if (isTokenExpired(token)) {
       message.warning("Sessiya tugagan, qayta kiring!");
+      logoutUser();
+      navigate("/login");
+    } else if (!token) {
+      logoutUser();
+      navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Ant Design form values mapping
       const payload = {
         username: values.username,
         password: values.password,
@@ -121,7 +127,8 @@ const Login = () => {
       navigate("/");
       document.location.reload();
     } catch (error) {
-      message.error(error.response?.data?.error || "Kirishda xatolik");
+      const errorMsg = error?.response?.data?.error || "Kirishda xatolik";
+      message.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -137,12 +144,10 @@ const Login = () => {
             rules={[{ required: true, message: "Username kiriting!" }]}
           >
             <Input
-              prefix={<UserOutlined style={{ color: "#000000" }} />}
+              prefix={<UserOutlined style={{ color: "gray" }} />}
+              style={{ paddingLeft: "35px" }}
               placeholder="Username"
               size="large"
-              style={{
-                paddingLeft: "40px",
-              }} /* Yozuvlar joyi icondan so‘ng keladi */
             />
           </StyledFormItem>
           <StyledFormItem
@@ -152,9 +157,9 @@ const Login = () => {
             <Input.Password
               placeholder="Parol"
               size="large"
-              style={{
-                paddingLeft: "40px",
-              }} /* Yozuvlar joyi icondan so‘ng keladi */
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
             />
           </StyledFormItem>
 
@@ -169,6 +174,7 @@ const Login = () => {
             </StyledButton>
           </Form.Item>
         </Form>
+
         <ForgotPassword>
           <a href="/create-account">Ro'yxatdan o'tish</a>
         </ForgotPassword>

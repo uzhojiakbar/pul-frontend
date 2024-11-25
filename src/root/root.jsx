@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Router from "../router/router";
 import "./root.css";
 import { isTokenExpired, logoutUser } from "../utils/auth";
@@ -10,14 +10,20 @@ import { useTransactions } from "../hook/useTransactions";
 import Loading from "../components/Loading/Loading";
 import styled from "styled-components";
 
+// Styled Componentsni alohida faylga ajratish tavsiya qilinadi
+const MainNWrapper = styled.div`
+  max-width: 1920px;
+  margin: 0 auto;
+`;
+
 const Root = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [FilterModalOpen, setFilterModalOpen] = useState(false);
+  const [filters, setFilters] = useState({});
 
-  const MainNWrapper = styled.div`
-    max-width: 1920px;
-    margin: 0 auto;
-  `;
+  // useMemo orqali filterlarni optimallashtirish
+  const memoizedFilters = useMemo(() => filters, [filters]);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -28,11 +34,7 @@ const Root = () => {
       logoutUser(); // Token yaroqsiz bo‘lsa
       setIsAuthenticated(false);
     }
-    setIsLoading(false); // Tekshiruv tugadi
   }, []);
-
-  const [FilterModalOpen, setFilterModalOpen] = useState(false);
-  const [filters, setFilters] = useState({}); // Filterlar holati
 
   const handleApplyFilters = (newFilters) => {
     setFilters({
@@ -45,25 +47,28 @@ const Root = () => {
     setFilterModalOpen(false);
   };
 
-  const { data: transactions = [], isLoading: transactionsLoading } =
-    useTransactions(filters);
+  // useTransactions optimallashtirilgan
+  const {
+    data: transactions = [],
+    isLoading: transactionsLoading,
+    error,
+  } = useTransactions(memoizedFilters);
 
-  if (isLoading) {
-    return <Loading />; // Autentifikatsiya tekshiruvi davomida Loading ko‘rsatamiz
-  }
+  // if (isLoading || transactionsLoading) {
+  //   return <Loading />; // Autentifikatsiya yoki ma'lumotlar yuklanmoqda
+  // }
+
+  // Error handling (optional)
 
   return isAuthenticated ? (
     <MainNWrapper className="main">
-      {transactionsLoading && <Loading />}
       <GlobalStyle />
       <Header setFilterModalOpen={setFilterModalOpen} />
-
       <FilterModal
         isOpen={FilterModalOpen}
         onClose={() => setFilterModalOpen(false)}
         onApply={handleApplyFilters}
       />
-
       <Router transactions={transactions} />
     </MainNWrapper>
   ) : (

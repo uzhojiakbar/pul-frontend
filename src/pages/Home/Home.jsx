@@ -59,7 +59,7 @@ const SidebarWithBalance = styled(Sidebar)`
   }
 `;
 
-const Home = ({ transactions }) => {
+const Home = ({}) => {
   const [OpenPage, setOpenPage] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // Check if the screen size is mobile or desktop
@@ -88,7 +88,7 @@ const Home = ({ transactions }) => {
       >
         <BalanceCard setOpenPage={setOpenPage} OpenPage={OpenPage} />
         <ContentWrapper>
-          <TransactionsList transactions={transactions} />
+          <TransactionsList />
         </ContentWrapper>
       </AppWrapper>
 

@@ -155,12 +155,14 @@ const NewExpense = ({ close = () => {}, loading, setLoading }) => {
       {
         onSuccess: () => {
           message.success("Tranzaksiya muvaffaqiyatli qo'shildi!");
+          // Inputlarni tozalash
           setAmount("");
+          setDescription("");
           setSelectedCategoryId("");
           setTypeMoney("");
           setPayment("");
           setLoading(false);
-          navigate("/");
+          navigate("/"); // Bosh sahifaga qaytish
         },
         onError: () => {
           message.error("Tranzaksiyani qo'shishda xatolik yuz berdi.");

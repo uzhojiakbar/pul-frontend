@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import Home from "../pages/Home/Home";
@@ -19,12 +19,9 @@ const HomePageStyle = styled.div`
     @media (min-width: 1024px) {
       display: block;
       flex: 0 0 400px; /* Faqat bitta o‘lcham */
-
       position: sticky; /* Sticky xulqini qo‘shish */
-      top: 10vh; /* Yuqoridan 26vh masofa */
-      max-height: 90vh; //Ichidagi kontentga mos ravishda o‘lchami
-
-      /* margin-left: 20px; */
+      top: 10vh; /* Yuqoridan 10vh masofa */
+      max-height: 90vh; /* Ichidagi kontentga mos ravishda o‘lchami */
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -36,7 +33,7 @@ const HomePageStyle = styled.div`
   }
 `;
 
-const Router = ({ transactions }) => {
+const Router = ({}) => {
   return (
     <Routes>
       <Route
@@ -45,7 +42,7 @@ const Router = ({ transactions }) => {
           <PageController>
             <HomePageStyle>
               <div className="homepage">
-                <Home transactions={transactions} />
+                <Home />
               </div>
             </HomePageStyle>
           </PageController>
@@ -75,23 +72,8 @@ const Router = ({ transactions }) => {
           </PageController>
         }
       />
-      {/* <Route
-        path="/new-income"
-        element={
-          <PageController>
-            <NewIncome />
-          </PageController>
-        }
-      />
-      <Route
-        path="/new-expense"
-        element={
-          <PageController>
-            <NewExpense />
-          </PageController>
-        }
-      /> */}
-      <Route path="/*" element={<h1>Not found</h1>} />
+      {/* React Router 404 */}
+      <Route path="/*" element={<h1>Not Found</h1>} />
     </Routes>
   );
 };

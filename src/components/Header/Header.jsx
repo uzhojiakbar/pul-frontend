@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import {
   FilterOutlined,
@@ -28,11 +28,9 @@ const TitleWrapper = styled(NavLink)`
   display: flex;
   align-items: center;
   gap: 8px;
-
   cursor: pointer;
   user-select: none;
   text-decoration: none;
-
   font-weight: 900;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 `;
@@ -120,12 +118,16 @@ const MainWrapper = styled.div`
 
 const Header = ({ setFilterModalOpen }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const toggleDrawer = () => setSidebarOpen(!isSidebarOpen);
 
-  const logoutUserFunc = () => {
+  // Using useCallback to memoize functions and prevent unnecessary re-renders
+  const toggleDrawer = useCallback(() => {
+    setSidebarOpen((prevState) => !prevState);
+  }, []);
+
+  const logoutUserFunc = useCallback(() => {
     document.location.reload();
     logoutUser();
-  };
+  }, []);
 
   const mobileMenu = (
     <Menu
