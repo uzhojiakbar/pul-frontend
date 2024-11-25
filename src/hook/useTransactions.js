@@ -1,20 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import instance from "../utils/axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 
-// Tranzaktsiyalarni olish
+import { useMemo } from "react";
+
 export const useTransactions = (filters = {}) => {
+  // Filters uchun memoizatsiya
+  const memoizedFilters = useMemo(() => {
+    return Object.entries(filters).reduce((acc, [key, value]) => {
+      if (value !== null && value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+  }, [filters]);
+
   return useQuery({
-    queryKey: ["transactions", filters],
+    queryKey: ["transactions", memoizedFilters], // Memoizatsiya qilingan obyektni kalit sifatida foydalanish
     queryFn: async () => {
-      const { data } = await instance.get("/transactions", {
-        params: filters,
-      });
+      const params = new URLSearchParams(memoizedFilters).toString();
+      console.log(params);
+
+      const { data } = await axiosInstance.get(`/transactions?${params}`);
       return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 daqiqa kechiktirish
-    keepPreviousData: true,
-    refetchOnWindowFocus: true, // Foydalanuvchi oynaga qaytganida qayta so'rov
-    refetchInterval: 10000, // Har 10 soniyada avtomatik yangilanish
+    staleTime: 1000 * 60 * 5, // 5 daqiqa kechikish
+    keepPreviousData: true, // Avvalgi ma'lumotni saqlash
+    refetchOnWindowFocus: true, // Foydalanuvchi oynaga qaytganda qayta so‘rov
+    refetchInterval: 10000, // Har 10 soniyada yangilanish
   });
 };
 
