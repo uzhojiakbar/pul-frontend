@@ -109,6 +109,10 @@ const MainWrapper = styled.div`
 
   padding: 16px 0;
 
+  min-width: 320px;
+  width: 100vw;
+  margin: 0 auto;
+
   .balance {
     /* display: none; */
 

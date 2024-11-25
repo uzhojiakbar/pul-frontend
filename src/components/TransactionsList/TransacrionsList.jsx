@@ -11,39 +11,46 @@ import {
 import moment from "moment";
 import { useTransactions } from "../../hook/useTransactions";
 import Loading from "../Loading/Loading";
-import BalanceCard from "../BalanceCard/BalanceCard";
 
 const { Panel } = Collapse;
 
-// Wrapper for the entire list
+// Wrapper for the entire list with glassmorphism
 const ListWrapper = styled.div`
   margin: 16px;
-  background-color: #f9f9f9;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   height: fit-content;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+
+  min-width: 320px;
+  width: 100vw;
+  margin: 0 auto;
 `;
 
-// Transaction item container
+// Transaction item container with glassmorphism
 const TransactionItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  border-bottom: 1px solid #ddd;
-  background-color: ${({ type }) =>
+  background: ${({ type }) =>
     type === "income"
-      ? "rgba(129, 199, 132, 0.2)"
-      : "rgba(229, 115, 115, 0.2)"};
+      ? "rgba(129, 199, 132, 0.3)"
+      : "rgba(229, 115, 115, 0.3)"};
   border-radius: 8px;
   margin-bottom: 8px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: ${({ type }) =>
+    background: ${({ type }) =>
       type === "income"
-        ? "rgba(129, 199, 132, 0.3)"
-        : "rgba(229, 115, 115, 0.3)"};
+        ? "rgba(129, 199, 132, 0.4)"
+        : "rgba(229, 115, 115, 0.4)"};
+    transform: scale(1.02);
     cursor: pointer;
   }
 
@@ -96,6 +103,10 @@ const DateSummary = styled.div`
   justify-content: space-between;
   font-weight: bold;
   padding: 10px 0;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 8px;
 `;
 
 const NoDataWrapper = styled.div`
@@ -119,8 +130,6 @@ const CustomCollapseIcon = styled.div`
     display: none;
   }
 `;
-
-const MainWrapper = styled.div``;
 
 const TransactionsList = () => {
   const filters = {}; // Filtirlar uchun shablon
@@ -236,6 +245,11 @@ const TransactionsList = () => {
             visible={isModalVisible}
             footer={null}
             onCancel={() => setModalVisible(false)}
+            bodyStyle={{
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "12px",
+            }}
           >
             <div>
               <p>

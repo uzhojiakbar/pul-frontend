@@ -4,6 +4,8 @@ import {
   WalletOutlined,
   CreditCardOutlined,
   DollarCircleOutlined,
+  MinusCircleFilled,
+  MinusOutlined,
 } from "@ant-design/icons";
 
 import { useBalance } from "../../hook/useBalance";
@@ -14,7 +16,6 @@ import Sidebar from "../Sidebar/Sidebar";
 
 const Card = styled.div`
   margin: 0 16px;
-  padding: 10px;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -23,15 +24,28 @@ const Card = styled.div`
   min-height: 100px;
   height: fit-content;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   gap: 4px;
 `;
 
 const TotalBalance = styled.div`
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
-  color: #4caf50;
+  background: rgba(76, 175, 80, 0.7);
+  font-weight: 900;
+  padding: 16px;
+  border-radius: 8px;
+  color: white;
+
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.2);
+`;
+
+const MainMiddle = styled.div`
+  width: 70%;
+
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
 `;
 
 const SubBalances = styled.div`
@@ -65,7 +79,6 @@ const Amount = styled.span`
   color: #4caf50;
 `;
 const Button = styled.button`
-  height: auto;
   background-color: ${({ color }) => color};
   border: none;
   border-radius: 8px; /* Burchaklarni biroz dumaloq qilish */
@@ -112,28 +125,28 @@ const BalanceCard = () => {
   return (
     <Card>
       {loading && <Loading />}
-
-      <TotalBalance>Umumiy hisob: UZS {balance?.all?.uzs}</TotalBalance>
-      <SubBalances>
-        <Button onClick={toggleDrawer2} color="#f44336">
-          -
-        </Button>{" "}
-        <SubBalanceItem>
-          <WalletOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
-          <Amount>{balance?.uzs.toLocaleString()} UZS </Amount>
-        </SubBalanceItem>
-        <Divider />
-        <SubBalanceItem>
-          <DollarCircleOutlined
-            style={{ fontSize: "16px", color: "#4caf50" }}
-          />
-          <Amount> {balance?.usd.toLocaleString()} USD</Amount>
-        </SubBalanceItem>
-        <Button onClick={toggleDrawer} color="#4caf50">
-          +
-        </Button>
-      </SubBalances>
-
+      <Button onClick={toggleDrawer2} color="#f44336">
+        <MinusOutlined />
+      </Button>{" "}
+      <MainMiddle>
+        <TotalBalance>Umumiy hisob: UZS {balance?.all?.uzs}</TotalBalance>
+        <SubBalances>
+          <SubBalanceItem>
+            <WalletOutlined style={{ fontSize: "16px", color: "#4caf50" }} />
+            <Amount>{balance?.uzs.toLocaleString()} UZS </Amount>
+          </SubBalanceItem>
+          <Divider />
+          <SubBalanceItem>
+            <DollarCircleOutlined
+              style={{ fontSize: "16px", color: "#4caf50" }}
+            />
+            <Amount> {balance?.usd.toLocaleString()} USD</Amount>
+          </SubBalanceItem>
+        </SubBalances>
+      </MainMiddle>
+      <Button onClick={toggleDrawer} color="#4caf50">
+        +
+      </Button>
       <Sidebar
         title="Income qo'shsh"
         isOpen={isSidebarOpenIncome}
