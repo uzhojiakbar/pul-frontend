@@ -42,6 +42,8 @@ const StyledButton = styled(Button)`
   padding: 30px;
   border: 2px solid transparent !important;
 
+  width: 100%;
+
   &:hover {
     background: white !important;
     border: 2px solid #4caf50 !important;
@@ -58,11 +60,8 @@ const StyledModal = styled(Modal)`
   }
 
   .ant-modal-header {
-    background: linear-gradient(
-      45deg,
-      #43a047,
-      #4caf50
-    ); /* Modaldagi header rang */
+    background-color: transparent;
+
     color: white;
     text-align: center;
     font-size: 20px;
@@ -146,6 +145,9 @@ const StyledListItem = styled.div`
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+
+    .del {
+    }
   }
 `;
 
@@ -156,22 +158,21 @@ const StyledListItemContent = styled.div`
 `;
 
 const StyledText = styled.span`
-  color: rgba(0, 0, 0, 0.8);
+  color: white;
   font-weight: 600;
   text-transform: capitalize;
   font-size: 16px;
 `;
 
 const StyledDeleteButton = styled(Button)`
-  background-color: rgba(244, 67, 54, 0.1);
-  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.6);
+  color: white;
   border: none;
   border-radius: 8px;
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: rgba(244, 67, 54, 0.2);
-    color: #d32f2f;
+    color: #d32f2f !important;
   }
 `;
 
@@ -232,14 +233,16 @@ const CategoryPage = () => {
     <PageWrapper>
       {isLoading && <Loading />}
       <StyledButton onClick={() => setIsModalOpen(true)}>
-        <PlusOutlined /> Add Category
+        <PlusOutlined /> Kategoriya qo'shish
       </StyledButton>
 
       <StyledModal
-        title="Add Category"
+        title="Kategoriya qoshish"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        footer={<StyledButton onClick={handleAddCategory}>Add</StyledButton>}
+        footer={
+          <StyledButton onClick={handleAddCategory}>Qo'shish</StyledButton>
+        }
       >
         <CardInput>
           <label>Category Name</label>
@@ -301,7 +304,10 @@ const CategoryPage = () => {
               <Emoji unified={item.emoji || "1f600"} size={24} />
               <StyledText>{item.name}</StyledText>
             </StyledListItemContent>
-            <StyledDeleteButton onClick={() => deleteCategory.mutate(item._id)}>
+            <StyledDeleteButton
+              className="del"
+              onClick={() => deleteCategory.mutate(item._id)}
+            >
               <DeleteOutlined />
             </StyledDeleteButton>
           </StyledListItem>

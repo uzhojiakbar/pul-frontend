@@ -6,7 +6,7 @@ import Loading from "../Loading/Loading";
 import NewExpense from "../../pages/NewExpense/NewIncome";
 
 const ButtonsWrapper = styled.div`
-  display: flex;
+  display: none;
   justify-content: space-around;
   align-items: center;
   position: fixed;
