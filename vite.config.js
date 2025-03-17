@@ -14,5 +14,9 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
+    port: 5021,
+  },
+  preview: {
+    port: 5021,
   },
 });
